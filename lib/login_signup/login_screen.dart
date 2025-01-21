@@ -19,8 +19,8 @@ class LoginScreenState extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    emailController.text = 'abc@abc.abc';
-    passwordController.text = 'abc@abc.abc';
+    emailController.text = 'leader1@leader1.com';
+    passwordController.text = 'leader1@leader1.com';
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.grey[200],

@@ -69,7 +69,7 @@ You are a highly specialized business assistant. Your sole purpose is to respond
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('GroqChat'),
+        title: const Text('Gabby AI'),
         actions: [_buildClearChatButton()],
       ),
       body: SafeArea(

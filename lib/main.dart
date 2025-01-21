@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
-import 'package:wizz/custom_widgets/task_card.dart';
+import 'package:wizz/custom_widgets/task_card_member.dart';
 import 'package:wizz/main_screens/home_screen.dart';
 import 'package:wizz/role_selection/create_team.dart';
 import 'package:wizz/services/firestore_service.dart';
@@ -84,7 +84,7 @@ class Home extends StatelessWidget {
 //     return MaterialApp(
 //       debugShowCheckedModeBanner: false,
 //       theme: ThemeData.light(),
-//       darkTheme: ThemeData.dark(),
+//       darkTheme: ThemeData.light(),
 //       home: Scaffold(
 //         resizeToAvoidBottomInset: false,
 //         body: LoginScreen(),

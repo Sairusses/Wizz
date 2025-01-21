@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wizz/custom_widgets/custom_tab_indicator.dart';
 import 'package:wizz/services/firestore_service.dart';
-import '../custom_widgets/task_card.dart';
+import '../custom_widgets/task_card_member.dart';
 
 
 class MemberDashboard extends StatefulWidget {
@@ -120,7 +120,7 @@ class _AllTasksList extends StatelessWidget {
     return ListView(
       children: tasks.map((doc) {
         Map<String, dynamic> task = doc.data() as Map<String, dynamic>;
-        return TaskCard(task: task, taskId: doc.id, teamId: teamId!);
+        return TaskCardMember(task: task, taskId: doc.id, teamId: teamId!);
       }).toList(),
     );
   }
@@ -151,7 +151,7 @@ class _InProgressTasksList extends StatelessWidget {
     return ListView(
       children: tasks.map((doc) {
         Map<String, dynamic> task = doc.data() as Map<String, dynamic>;
-        return TaskCard(task: task, taskId: doc.id, teamId: teamId!);
+        return TaskCardMember(task: task, taskId: doc.id, teamId: teamId!);
       }).toList(),
     );
   }
@@ -182,7 +182,7 @@ class _CompletedTasksList extends StatelessWidget {
     return ListView(
       children: tasks.map((doc) {
         Map<String, dynamic> task = doc.data() as Map<String, dynamic>;
-        return TaskCard(task: task, taskId: doc.id, teamId: teamId!);
+        return TaskCardMember(task: task, taskId: doc.id, teamId: teamId!);
       }).toList(),
     );
   }
@@ -221,7 +221,7 @@ class _DueTodayTasksList extends StatelessWidget {
     return ListView(
       children: tasks.map((doc) {
         Map<String, dynamic> task = doc.data() as Map<String, dynamic>;
-        return TaskCard(task: task, taskId: doc.id, teamId: teamId!);
+        return TaskCardMember(task: task, taskId: doc.id, teamId: teamId!);
       }).toList(),
     );
   }

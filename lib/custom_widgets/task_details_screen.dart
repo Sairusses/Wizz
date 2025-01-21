@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:wizz/custom_widgets/task_card.dart';
+import 'package:wizz/custom_widgets/task_card_member.dart';
 
 class TaskDetailsScreen extends StatelessWidget {
   final Map<String, dynamic> task;

@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:wizz/custom_widgets/task_details_screen.dart';
 
-class TaskCard extends StatelessWidget {
+class TaskCardMember extends StatelessWidget {
   final Map<String, dynamic> task;
   final String taskId;
   final String teamId;
 
-  const TaskCard({
+  const TaskCardMember({
     super.key,
     required this.task,
     required this.taskId,

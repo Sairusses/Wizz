@@ -4,6 +4,7 @@ class CustomTextFormField extends StatefulWidget {
   final TextEditingController controller;
   final String labelText;
   final String hint;
+  final int maxLines;
   final Icon? prefixIcon;
   final Icon? suffixIcon;
   final VoidCallback? onSuffixPressed;
@@ -14,6 +15,7 @@ class CustomTextFormField extends StatefulWidget {
     required this.controller,
     required this.labelText,
     required this.hint,
+    this.maxLines = 1,
     this.prefixIcon,
     this.suffixIcon,
     this.onSuffixPressed,
@@ -49,6 +51,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
         ),
         const SizedBox(height: 5),
         TextFormField(
+          maxLines: widget.maxLines,
           controller: widget.controller,
           obscureText: widget.isPassword ? _obscureText : false,
           style: const TextStyle(

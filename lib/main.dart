@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:wizz/custom_widgets/task_card_member.dart';
+import 'package:wizz/leader_screens/leader_dashboard.dart';
+import 'package:wizz/leader_screens/new_task.dart';
 import 'package:wizz/main_screens/home_screen.dart';
 import 'package:wizz/role_selection/create_team.dart';
 import 'package:wizz/services/firestore_service.dart';
@@ -71,7 +73,7 @@ class Home extends StatelessWidget {
       builder: DevicePreview.appBuilder,
       theme: ThemeData.light(),
       darkTheme: ThemeData.light(),
-      home: LoginScreen()
+      home: LeaderDashboard()
     );
   }
 }

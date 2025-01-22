@@ -177,9 +177,10 @@ class _JoinButton extends StatelessWidget {
             await FirestoreService().assignUserToTeam(uid, teamID);
 
             Navigator.pop(context);
-            Navigator.pushReplacement(
+            Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (context) => HomeScreen(role: 'member')),
+              (Route<dynamic> route) => false,
             );
           } else {
             Navigator.pop(context);

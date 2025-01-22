@@ -3,11 +3,14 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:wizz/services/auth_service.dart';
+import 'package:wizz/services/firestore_service.dart';
 
 import '../custom_widgets/custom_text_form_field.dart';
 
 class NewTask extends StatefulWidget{
-  const NewTask({super.key});
+  final String teamId;
+  const NewTask({super.key, required this.teamId});
 
   @override
   NewTaskState createState() => NewTaskState();
@@ -17,9 +20,38 @@ class NewTaskState extends State<NewTask>{
   final TextEditingController titleController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
 
-  final List<String> items = ['Low', 'Medium', 'High'];
+  final List<String> priorityItems = ['Low', 'Medium', 'High'];
+  late List<String> memberItems = [];
   String? selectedValue;
+  List<String> selectedItems = [];
   late Timestamp dueDate;
+
+  @override
+  initState()  {
+    super.initState();
+    _fetchTeamMembers();
+  }
+
+
+  Future<void> _fetchTeamMembers() async {
+    try {
+      QuerySnapshot membersSnapshot = await FirebaseFirestore.instance
+          .collection('teams')
+          .doc(widget.teamId)
+          .collection('members')
+          .where('role', isEqualTo: 'member')
+          .get();
+
+      List<String> usernames = membersSnapshot.docs
+          .map((doc) => doc['username'] as String)
+          .toList();
+      setState(() {
+        memberItems = usernames;
+      });
+    } catch (e) {
+      AuthService().showToast('Error fetching members: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -90,7 +122,7 @@ class NewTaskState extends State<NewTask>{
                         ),
                       ],
                     ),
-                    items: items.map((String item) => DropdownMenuItem<String>(
+                    items: priorityItems.map((String item) => DropdownMenuItem<String>(
                       value: item,
                       child: Text(
                         item,
@@ -143,7 +175,6 @@ class NewTaskState extends State<NewTask>{
                   ),
                 ),
                 SizedBox(width: 16,),
-
                 //Due Date
                 Expanded(
                   child: ElevatedButton.icon(
@@ -174,7 +205,7 @@ class NewTaskState extends State<NewTask>{
                               ),
                               textButtonTheme: TextButtonThemeData(
                                 style: TextButton.styleFrom(
-                                  foregroundColor: Colors.black, // Button text color
+                                  foregroundColor: Colors.black,
                                 ),
                               ),
                             ),
@@ -184,6 +215,12 @@ class NewTaskState extends State<NewTask>{
                       );
                       if (pickedDate != null) {
                         dueDate = Timestamp.fromDate(pickedDate);
+                        Fluttertoast.showToast(
+                            msg: dueDate.toString(),
+                            toastLength: Toast.LENGTH_LONG,
+                            backgroundColor: Colors.grey[200],
+                            textColor: Colors.black
+                        );
                       } else {
                         Fluttertoast.showToast(
                           msg: 'Error in picking date',
@@ -212,6 +249,135 @@ class NewTaskState extends State<NewTask>{
             ),
             const SizedBox(height: 24),
 
+
+            //Members list
+            DropdownButtonHideUnderline(
+              child: DropdownButton2(
+                isExpanded: true,
+                hint: const Row(
+                  children: [
+                    Icon(
+                      Icons.person_2_outlined,
+                      size: 16,
+                      color: Colors.black,
+                    ),
+                    SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        'Add People',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+                items: memberItems.map((String item) {
+                  return DropdownMenuItem(
+                    value: item,
+                    // Disable default onTap to prevent closing the menu when an item is tapped
+                    enabled: false,
+                    child: StatefulBuilder(
+                      builder: (context, menuSetState) {
+                        final isSelected = selectedItems.contains(item);
+                        return InkWell(
+                          onTap: () {
+                            if (isSelected) {
+                              selectedItems.remove(item);
+                            } else {
+                              selectedItems.add(item);
+                            }
+                            // Rebuild the parent widget to reflect changes
+                            setState(() {});
+                            // Rebuild the dropdown menu to update the checkboxes
+                            menuSetState(() {});
+                          },
+                          child: Container(
+                            height: double.infinity,
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Row(
+                              children: [
+                                if (isSelected)
+                                  const Icon(Icons.check_box_outlined)
+                                else
+                                  const Icon(Icons.check_box_outline_blank),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Text(
+                                    item,
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                }).toList(),
+                // Use a custom display for selected items
+                selectedItemBuilder: (context) {
+                  return [
+                    Text(
+                      selectedItems.isEmpty
+                          ? 'No one selected'
+                          : selectedItems.join(', '),
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
+                  ];
+                },
+                onChanged: (_) {}, // Not used in multiselect dropdown
+                buttonStyleData: ButtonStyleData(
+                  height: 50,
+                  width: MediaQuery.of(context).size.width,
+                  padding: const EdgeInsets.only(left: 14, right: 14),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(
+                      color: Colors.black54,
+                    ),
+                    color: Colors.white,
+                  ),
+                  elevation: 2,
+                ),
+                iconStyleData: const IconStyleData(
+                  icon: Icon(
+                    Icons.arrow_forward_ios_outlined,
+                  ),
+                  iconSize: 14,
+                  iconEnabledColor: Colors.black,
+                  iconDisabledColor: Colors.grey,
+                ),
+                menuItemStyleData: const MenuItemStyleData(
+                  height: 40,
+                  padding: EdgeInsets.only(left: 14, right: 14),
+                ),
+                dropdownStyleData: DropdownStyleData(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(14),
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+
+            SizedBox(height: 24,),
+
+
             // Create Task Button
             SizedBox(
               width: MediaQuery.of(context).size.width,
@@ -237,5 +403,4 @@ class NewTaskState extends State<NewTask>{
       ),
     );
   }
-
 }

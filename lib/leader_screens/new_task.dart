@@ -21,6 +21,7 @@ class NewTask extends StatefulWidget{
 class NewTaskState extends State<NewTask>{
   final TextEditingController titleController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
+  final TextEditingController budgetController = TextEditingController();
 
   final List<String> priorityItems = ['Low', 'Medium', 'High'];
   late List<String> memberItems = [];
@@ -96,6 +97,7 @@ class NewTaskState extends State<NewTask>{
         padding: const EdgeInsets.all(20.0),
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -281,10 +283,25 @@ class NewTaskState extends State<NewTask>{
 
               ],
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 12),
 
 
             //Members list
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Text('Assignees',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black
+                  ),
+                ),
+              ],
+            ),
+
+            SizedBox(height: 8,),
+
             DropdownButtonHideUnderline(
               child: DropdownButton2(
                 isExpanded: true,
@@ -411,7 +428,16 @@ class NewTaskState extends State<NewTask>{
 
             SizedBox(height: 24,),
 
+            //Budget
+            CustomTextFormField(
+              controller: budgetController,
+              labelText: 'Budget',
+              hint: 'Add a budget',
+              textInputType: TextInputType.number,
+              prefixIcon: Icon(Icons.attach_money),
+            ),
 
+            SizedBox(height: 24,),
             // Create Task Button
             SizedBox(
               width: MediaQuery.of(context).size.width,
@@ -426,19 +452,30 @@ class NewTaskState extends State<NewTask>{
                 onPressed: () async {
                   String title = titleController.text.toString();
                   String description = descriptionController.text.toString();
-                  if(title.isNotEmpty && description.isNotEmpty && selectedPriorityValue != null && selectedMembers.isNotEmpty){
+                  double budget = 0;
+                  bool success = false;
+                  try{
+                    budget = double.parse(budgetController.text);
+                    success = true;
+                  }catch(e){AuthService().showToast('$e');}
+                  if(title.isNotEmpty && description.isNotEmpty && success && selectedPriorityValue != null && selectedMembers.isNotEmpty){
                     for(String member in selectedMembers){
                       await addTaskToTeam(
                         assignedTo: member,
                         title: title,
                         description: description,
                         priority: selectedPriorityValue!,
-                        budget: 500,
+                        budget: budget,
                         status: 'In Progress',
                         dueDate: dueDate,
                       );
                     }
+                    AuthService().showToast('Successfully added task!');
+                    Navigator.pop(context);
+                  }else {
+                    AuthService().showToast('Please fill in all the fields');
                   }
+
                 },
                 child: const Text(
                   "Create Task",

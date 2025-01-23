@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class CustomTextFormField extends StatefulWidget {
   final TextEditingController controller;
   final String labelText;
   final String hint;
   final int maxLines;
+  final TextInputType textInputType;
   final Icon? prefixIcon;
   final Icon? suffixIcon;
   final VoidCallback? onSuffixPressed;
@@ -16,6 +18,7 @@ class CustomTextFormField extends StatefulWidget {
     required this.labelText,
     required this.hint,
     this.maxLines = 1,
+    this.textInputType = TextInputType.text,
     this.prefixIcon,
     this.suffixIcon,
     this.onSuffixPressed,
@@ -51,6 +54,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
         ),
         const SizedBox(height: 5),
         TextFormField(
+          keyboardType: widget.textInputType,
           maxLines: widget.maxLines,
           controller: widget.controller,
           obscureText: widget.isPassword ? _obscureText : false,

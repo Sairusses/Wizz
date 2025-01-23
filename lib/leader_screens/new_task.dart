@@ -3,6 +3,8 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
+import 'package:wizz/custom_widgets/task_card_member.dart';
 import 'package:wizz/services/auth_service.dart';
 import 'package:wizz/services/firestore_service.dart';
 
@@ -22,16 +24,16 @@ class NewTaskState extends State<NewTask>{
 
   final List<String> priorityItems = ['Low', 'Medium', 'High'];
   late List<String> memberItems = [];
-  String? selectedValue;
-  List<String> selectedItems = [];
+  String? selectedPriorityValue;
+  List<String> selectedMembers = [];
   late Timestamp dueDate;
+  String? dueDateString;
 
   @override
   initState()  {
     super.initState();
     _fetchTeamMembers();
   }
-
 
   Future<void> _fetchTeamMembers() async {
     try {
@@ -52,6 +54,39 @@ class NewTaskState extends State<NewTask>{
       AuthService().showToast('Error fetching members: $e');
     }
   }
+
+  Future<void> addTaskToTeam({
+    required String assignedTo,
+    required String title,
+    required String description,
+    required String priority,
+    required double budget,
+    required String status,
+    required Timestamp dueDate,
+  }) async {
+    try {
+      CollectionReference tasksCollection = FirebaseFirestore.instance
+          .collection('teams')
+          .doc(widget.teamId)
+          .collection('tasks');
+
+      await tasksCollection.add({
+        'assigned_to': assignedTo,
+        'title': title,
+        'description': description,
+        'priority': priority,
+        'budget': budget,
+        'status': status,
+        'due_date': dueDate,
+        'created_at': FieldValue.serverTimestamp(),
+      });
+
+      AuthService().showToast('Tasks Added');
+    } catch (e) {
+      AuthService().showToast('Error: $e');
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -135,10 +170,10 @@ class NewTaskState extends State<NewTask>{
                       ),
                     ))
                         .toList(),
-                    value: selectedValue,
+                    value: selectedPriorityValue,
                     onChanged: (value) {
                       setState(() {
-                        selectedValue = value;
+                        selectedPriorityValue = value;
                       });
                     },
                     buttonStyleData: ButtonStyleData(
@@ -175,6 +210,8 @@ class NewTaskState extends State<NewTask>{
                   ),
                 ),
                 SizedBox(width: 16,),
+
+
                 //Due Date
                 Expanded(
                   child: ElevatedButton.icon(
@@ -192,8 +229,8 @@ class NewTaskState extends State<NewTask>{
                       DateTime? pickedDate = await showDatePicker(
                         context: context,
                         initialDate: DateTime.now(),
-                        firstDate: DateTime(2025),
-                        lastDate: DateTime(2026),
+                        firstDate: DateTime.now(),
+                        lastDate: DateTime(2030),
                         builder: (BuildContext context, Widget? child) {
                           return Theme(
                             data: ThemeData(
@@ -214,16 +251,13 @@ class NewTaskState extends State<NewTask>{
                         },
                       );
                       if (pickedDate != null) {
-                        dueDate = Timestamp.fromDate(pickedDate);
-                        Fluttertoast.showToast(
-                            msg: dueDate.toString(),
-                            toastLength: Toast.LENGTH_LONG,
-                            backgroundColor: Colors.grey[200],
-                            textColor: Colors.black
-                        );
+                        setState(() {
+                          dueDate = Timestamp.fromDate(pickedDate);
+                          dueDateString = DateFormat('MMM d, yyyy').format(dueDate.toDate()).toString();
+                        });
                       } else {
                         Fluttertoast.showToast(
-                          msg: 'Error in picking date',
+                          msg: 'No date selected.',
                           toastLength: Toast.LENGTH_LONG,
                           backgroundColor: Colors.grey[200],
                           textColor: Colors.black
@@ -234,8 +268,8 @@ class NewTaskState extends State<NewTask>{
                       Icons.calendar_today,
                       color: Colors.black,
                     ),
-                    label: const Text(
-                      "Due Date",
+                    label: Text(
+                      dueDateString ?? "Due Date",
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
@@ -282,13 +316,13 @@ class NewTaskState extends State<NewTask>{
                     enabled: false,
                     child: StatefulBuilder(
                       builder: (context, menuSetState) {
-                        final isSelected = selectedItems.contains(item);
+                        final isSelected = selectedMembers.contains(item);
                         return InkWell(
                           onTap: () {
                             if (isSelected) {
-                              selectedItems.remove(item);
+                              selectedMembers.remove(item);
                             } else {
-                              selectedItems.add(item);
+                              selectedMembers.add(item);
                             }
                             // Rebuild the parent widget to reflect changes
                             setState(() {});
@@ -327,9 +361,9 @@ class NewTaskState extends State<NewTask>{
                 selectedItemBuilder: (context) {
                   return [
                     Text(
-                      selectedItems.isEmpty
+                      selectedMembers.isEmpty
                           ? 'No one selected'
-                          : selectedItems.join(', '),
+                          : selectedMembers.join(', '),
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
@@ -389,8 +423,22 @@ class NewTaskState extends State<NewTask>{
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                onPressed: () {
-
+                onPressed: () async {
+                  String title = titleController.text.toString();
+                  String description = descriptionController.text.toString();
+                  if(title.isNotEmpty && description.isNotEmpty && selectedPriorityValue != null && selectedMembers.isNotEmpty){
+                    for(String member in selectedMembers){
+                      await addTaskToTeam(
+                        assignedTo: member,
+                        title: title,
+                        description: description,
+                        priority: selectedPriorityValue!,
+                        budget: 500,
+                        status: 'In Progress',
+                        dueDate: dueDate,
+                      );
+                    }
+                  }
                 },
                 child: const Text(
                   "Create Task",

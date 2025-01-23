@@ -49,7 +49,7 @@ class FirestoreService {
         return team.id;  // Return the team document ID
       }
     }
-    return 'wala'; // User is not in any team
+    return 'Nothing here'; // User is not in any team
   }
 
 

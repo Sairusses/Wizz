@@ -73,7 +73,7 @@ class Home extends StatelessWidget {
       builder: DevicePreview.appBuilder,
       theme: ThemeData.light(),
       darkTheme: ThemeData.light(),
-      home: LeaderDashboard()
+      home: LoginScreen()
     );
   }
 }

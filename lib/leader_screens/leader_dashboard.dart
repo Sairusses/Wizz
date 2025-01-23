@@ -17,7 +17,6 @@ class LeaderDashboard extends StatefulWidget {
 
 }
 class LeaderDashboardState extends State<LeaderDashboard> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,7 +32,6 @@ class LeaderDashboardState extends State<LeaderDashboard> {
       ),
     );
   }
-
 }
 
 class _AppBar extends StatelessWidget implements PreferredSizeWidget{
@@ -73,20 +71,41 @@ class _AppBar extends StatelessWidget implements PreferredSizeWidget{
   }
 
   @override
-  // TODO: implement preferredSize
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 
 }
 
-class TasksList extends StatelessWidget{
+class TasksList extends StatefulWidget{
   const TasksList({super.key});
+
+  @override
+  TasksListState createState() => TasksListState();
+}
+
+class TasksListState extends State<TasksList>{
+  late String? teamId;
+  bool isInitialized = false;
+
+  @override
+  initState()  {
+    super.initState();
+    _initializeUserTeam();
+  }
+
+  void _initializeUserTeam() async {
+    String? team = await FirestoreService().getUserTeam();
+    setState(() {
+      teamId = team;
+      isInitialized = true;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: ShapeDecoration(
         shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10)
+            borderRadius: BorderRadius.circular(10)
         ),
       ),
       child: Column(
@@ -107,201 +126,15 @@ class TasksList extends StatelessWidget{
                 ),
                 color: Colors.black87,
                 onPressed: () {
-                  showDialog(context: context, builder: (context) => NewTask());
+                  isInitialized ? showDialog(context: context, builder: (context) => NewTask(teamId: teamId!,)) : null;
                 },
               ),
             ],
           ),
-
-
         ],
       ),
     );
   }
 }
 
-class NewTaskDialog extends StatefulWidget {
-  const NewTaskDialog({super.key});
-
-  @override
-  NewTaskDialogState createState() => NewTaskDialogState();
-}
-
-class NewTaskDialogState extends State<NewTaskDialog>{
-  final TextEditingController titleController = TextEditingController();
-  final TextEditingController descriptionController = TextEditingController();
-
-  String? selectedPriority; // Selected value for dropdown
-  final List<String> priorities = ['Low', 'Medium', 'High']; // Dropdown items
-
-  @override
-  Widget build(BuildContext context) {
-    return Dialog(
-      backgroundColor: Colors.white,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    "New Task",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () => Navigator.of(context).pop(),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              CustomTextFormField(
-                  controller: titleController,
-                  labelText: 'Task Title',
-                  hint: 'Enter task title'
-              ),
-              const SizedBox(height: 16),
-              // Description
-              CustomTextFormField(
-                  controller: descriptionController,
-                  labelText: 'Description',
-                  maxLines: 4,
-                  hint: 'Add task details'),
-              const SizedBox(height: 16),
-              // Priority and Due Date
-              Row(
-                children: [
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 8.0),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey),
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  child: DropdownButtonHideUnderline(
-                    child: DropdownButton<String>(
-                      value: selectedPriority,
-                      hint: Row(
-                        children: [
-                          Icon(Icons.flag, color: Colors.black),
-                          SizedBox(width: 8.0),
-                          Text('Priority', style: TextStyle(color: Colors.black)),
-                        ],
-                      ),
-                      isExpanded: true,
-                      items: priorities.map((String priority) {
-                        return DropdownMenuItem<String>(
-                          value: priority,
-                          child: Text(priority),
-                        );
-                      }).toList(),
-                      onChanged: (String? value) {
-                        setState(() {
-                          selectedPriority = value;
-                        });
-                      },
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.grey[200],
-                      foregroundColor: Colors.black,
-                    ),
-                    onPressed: () {
-                      // Handle due date
-                    },
-                    icon: const Icon(Icons.calendar_today),
-                    label: const Text("Due Date"),
-                  ),
-                ),
-                ],
-              ),
-              const SizedBox(height: 16),
-
-              // Assignees
-              const Text(
-                "Assignees",
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-              ),
-              const SizedBox(height: 8),
-              GestureDetector(
-                onTap: () {
-                  // Handle add people
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: const [
-                      Text("Add people"),
-                      Icon(Icons.arrow_forward_ios, size: 16),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              // Assignees' avatars (mock data)
-              Row(
-                children: const [
-                  CircleAvatar(
-                    backgroundColor: Colors.black26,
-                    child: Icon(Icons.person, color: Colors.white),
-                  ),
-                  SizedBox(width: 8),
-                  CircleAvatar(
-                    backgroundColor: Colors.black26,
-                    child: Icon(Icons.person, color: Colors.white),
-                  ),
-                  SizedBox(width: 8),
-                  CircleAvatar(
-                    backgroundColor: Colors.black26,
-                    child: Icon(Icons.person, color: Colors.white),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-
-              // Create Task Button
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  onPressed: () {
-                    Fluttertoast.showToast(msg: selectedPriority!);
-                  },
-                  child: const Text(
-                    "Create Task",
-                    style: TextStyle(fontSize: 16, color: Colors.white),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
 

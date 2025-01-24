@@ -231,7 +231,7 @@ class _TasksTabView extends StatelessWidget {
   final String? teamId;
   final String? userId;
   final TabController tabController;
-  final ScrollController scrollController; // Accept scroll controller
+  final ScrollController scrollController;
 
   const _TasksTabView({
     required this.teamId,

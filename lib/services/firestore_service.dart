@@ -6,10 +6,31 @@ import 'auth_service.dart';
 class FirestoreService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  Future<List<Map<String, dynamic>>> fetchInProgressTasks(String teamId) async {
+    try {
+      QuerySnapshot tasksSnapshot = await _firestore
+          .collection('teams')
+          .doc(teamId)
+          .collection('tasks')
+          .get();
+
+      List<Map<String, dynamic>> tasks = tasksSnapshot.docs.map((doc) {
+        return {
+          'id': doc.id,
+          ...doc.data() as Map<String, dynamic>,
+        };
+      }).toList();
+
+      return tasks;
+    } catch (e) {
+      AuthService().showToast('Error fetching in-progress tasks: $e');
+      return [];
+    }
+  }
 
   Future<String> getCollectionJson(String teamId) async {
     try {
-      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+      QuerySnapshot querySnapshot = await _firestore
           .collection('teams')
           .doc(teamId)
           .collection('tasks')
@@ -52,6 +73,25 @@ class FirestoreService {
     return 'Nothing here'; // User is not in any team
   }
 
+  Future<String?> fetchUserIdByUsername(String username) async {
+    try {
+      QuerySnapshot userSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('username', isEqualTo: username)
+          .limit(1)
+          .get();
+
+      if (userSnapshot.docs.isNotEmpty) {
+        return userSnapshot.docs.first.id;
+      } else {
+        AuthService().showToast('User not found for username: $username');
+        return null;
+      }
+    } catch (e) {
+      AuthService().showToast('Error fetching userId: $e');
+      return null;
+    }
+  }
 
   Future<String?> getUsername(String userId) async {
     try {

@@ -77,12 +77,11 @@ class NewTaskState extends State<NewTask>{
         'description': description,
         'priority': priority,
         'budget': budget,
+        'progress': 0,
         'status': status,
         'due_date': dueDate,
         'created_at': FieldValue.serverTimestamp(),
       });
-
-      AuthService().showToast('Tasks Added');
     } catch (e) {
       AuthService().showToast('Error: $e');
     }
@@ -450,33 +449,60 @@ class NewTaskState extends State<NewTask>{
                   ),
                 ),
                 onPressed: () async {
-                  String title = titleController.text.toString();
-                  String description = descriptionController.text.toString();
+                  String title = titleController.text.trim();
+                  String description = descriptionController.text.trim();
                   double budget = 0;
                   bool success = false;
-                  try{
+
+                  // Parsing budget with error handling
+                  try {
                     budget = double.parse(budgetController.text);
                     success = true;
-                  }catch(e){AuthService().showToast('$e');}
-                  if(title.isNotEmpty && description.isNotEmpty && success && selectedPriorityValue != null && selectedMembers.isNotEmpty){
-                    for(String member in selectedMembers){
-                      await addTaskToTeam(
-                        assignedTo: member,
-                        title: title,
-                        description: description,
-                        priority: selectedPriorityValue!,
-                        budget: budget,
-                        status: 'In Progress',
-                        dueDate: dueDate,
-                      );
-                    }
-                    AuthService().showToast('Successfully added task!');
-                    Navigator.pop(context);
-                  }else {
-                    AuthService().showToast('Please fill in all the fields');
+                  } catch (e) {
+                    AuthService().showToast('Invalid budget value: $e');
                   }
 
+                  // Validating inputs
+                  if (title.isNotEmpty &&
+                      description.isNotEmpty &&
+                      success &&
+                      selectedPriorityValue != null &&
+                      selectedMembers.isNotEmpty) {
+                    try {
+                      // Loop through each selected member
+                      for (String member in selectedMembers) {
+                        // Fetch member ID
+                        String? memberId = await FirestoreService().fetchUserIdByUsername(member);
+
+                        if (memberId == null) {
+                          AuthService().showToast('User ID not found for member: $member');
+                          continue; // Skip this member if userId is not found
+                        }
+
+                        // Add task to the team
+                        await addTaskToTeam(
+                          assignedTo: memberId,
+                          title: title,
+                          description: description,
+                          priority: selectedPriorityValue!,
+                          budget: budget,
+                          status: 'In Progress',
+                          dueDate: dueDate,
+                        );
+
+                        AuthService().showToast('Successfully added task to: $member');
+                      }
+
+                      // Close the dialog or navigate back
+                      Navigator.pop(context);
+                    } catch (e) {
+                      AuthService().showToast('Error adding task: $e');
+                    }
+                  } else {
+                    AuthService().showToast('Please fill in all the fields');
+                  }
                 },
+
                 child: const Text(
                   "Create Task",
                   style: TextStyle(fontSize: 16, color: Colors.white),

@@ -5,6 +5,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:wizz/custom_widgets/custom_text_form_field.dart';
 import 'package:wizz/custom_widgets/task_card_leader.dart';
+import 'package:wizz/services/auth_service.dart';
 
 import '../services/firestore_service.dart';
 import 'new_task.dart';
@@ -17,20 +18,76 @@ class LeaderDashboard extends StatefulWidget {
 
 }
 class LeaderDashboardState extends State<LeaderDashboard> {
+
+  String? teamId;
+  bool isLoading = true;
+  List<Map<String, dynamic>> tasks = [];
+
+  @override
+  initState() {
+    super.initState();
+    _initializeTeamId();
+  }
+
+  void _initializeTeamId() async {
+    try {
+      String? team = await FirestoreService().getUserTeam();
+      setState(() {
+        teamId = team;
+      });
+      _fetchInProgressTasks();
+    } catch (error) {
+      setState(() {
+        isLoading = false;
+      });
+      AuthService().showToast("Error fetching team: $error");
+    }
+  }
+  void _fetchInProgressTasks() async {
+    try {
+      if (teamId != null) {
+        List<Map<String, dynamic>> fetchedTasks = await FirestoreService().fetchInProgressTasks(teamId!);
+        setState(() {
+          tasks = fetchedTasks;
+          isLoading = false;
+        });
+      }
+    } catch (error) {
+      setState(() {
+        isLoading = false;
+      });
+      AuthService().showToast("Error fetching tasks: $error");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: _AppBar(),
-      body: Container(
-        color: Colors.grey[200],
-        padding: EdgeInsets.all(20),
-        child: Column(
-          children: [
-            TasksList()
-          ],
+    if(isLoading){
+      return Scaffold(
+        appBar: _AppBar(),
+        body: Container(
+          color: Colors.grey[200],
+          padding: EdgeInsets.all(20),
+          child: Center(
+            child: CircularProgressIndicator(color: Colors.black54),
+          )
         ),
-      ),
-    );
+      );
+    }else{
+      return Scaffold(
+        appBar: _AppBar(),
+        body: Container(
+          color: Colors.grey[200],
+          padding: EdgeInsets.all(20),
+          child: Column(
+            children: [
+              TasksTitle(teamId: teamId,),
+              TasksCardLeader(tasks: tasks),
+            ],
+          ),
+        ),
+      );
+    }
   }
 }
 
@@ -75,30 +132,15 @@ class _AppBar extends StatelessWidget implements PreferredSizeWidget{
 
 }
 
-class TasksList extends StatefulWidget{
-  const TasksList({super.key});
+class TasksTitle extends StatefulWidget{
+  final String? teamId;
+  const TasksTitle({super.key, required this.teamId});
 
   @override
-  TasksListState createState() => TasksListState();
+  TasksTitleState createState() => TasksTitleState();
 }
 
-class TasksListState extends State<TasksList>{
-  late String? teamId;
-  bool isInitialized = false;
-
-  @override
-  initState()  {
-    super.initState();
-    _initializeUserTeam();
-  }
-
-  void _initializeUserTeam() async {
-    String? team = await FirestoreService().getUserTeam();
-    setState(() {
-      teamId = team;
-      isInitialized = true;
-    });
-  }
+class TasksTitleState extends State<TasksTitle>{
 
   @override
   Widget build(BuildContext context) {
@@ -126,7 +168,7 @@ class TasksListState extends State<TasksList>{
                 ),
                 color: Colors.black87,
                 onPressed: () {
-                  isInitialized ? showDialog(context: context, builder: (context) => NewTask(teamId: teamId!,)) : null;
+                  showDialog(context: context, builder: (context) => NewTask(teamId: widget.teamId!));
                 },
               ),
             ],

@@ -91,6 +91,9 @@ class NewTaskState extends State<NewTask>{
   @override
   Widget build(BuildContext context) {
     return Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
       backgroundColor: Colors.white,
       child: Padding(
         padding: const EdgeInsets.all(20.0),

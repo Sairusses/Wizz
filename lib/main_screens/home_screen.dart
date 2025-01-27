@@ -90,7 +90,9 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
                 controller: tabController,
                 dragStartBehavior: DragStartBehavior.down,
                 children: [
-                  widget.role == "member" ? MemberDashboard(controller: controller) : LeaderDashboard(),
+                  widget.role == "member"
+                      ? MemberDashboard(controller: controller)
+                      : LeaderDashboard(),
                   ChatsScreen(),
                   AIWindowScreen(),
                   widget.role == "member" ? ReportsMember() : ReportsLeader(),

@@ -1,9 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:provider/provider.dart';
-import 'package:wizz/custom_widgets/custom_text_form_field.dart';
 import 'package:wizz/custom_widgets/task_card_leader.dart';
 import 'package:wizz/services/auth_service.dart';
 
@@ -80,8 +75,11 @@ class LeaderDashboardState extends State<LeaderDashboard> {
           color: Colors.grey[200],
           padding: EdgeInsets.all(20),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               TasksTitle(teamId: teamId,),
+              SizedBox(height: 8,),
               TasksCardLeader(tasks: tasks),
             ],
           ),
@@ -92,7 +90,6 @@ class LeaderDashboardState extends State<LeaderDashboard> {
 }
 
 class _AppBar extends StatelessWidget implements PreferredSizeWidget{
-  const _AppBar({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -150,26 +147,45 @@ class TasksTitleState extends State<TasksTitle>{
             borderRadius: BorderRadius.circular(10)
         ),
       ),
-      child: Column(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+          ElevatedButton(
+            onPressed: () {
+              showDialog(context: context, builder: (context) => NewTask(teamId: widget.teamId!));
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.black,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.add, color: Colors.white, size: 16),
+                SizedBox(width: 8),
+                Text(
+                  'New Task',
+                  style: TextStyle(color: Colors.white, fontSize: 14),
+                ),
+              ],
+            ),
+          ),
           Row(
             children: [
-              Text('Tasks',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.normal,
-                  color: Colors.black,
-                ),
-              ),
-              SizedBox(width: 20,),
               IconButton(
-                icon: Icon(
-                  Icons.add_circle,
-                ),
-                color: Colors.black87,
                 onPressed: () {
-                  showDialog(context: context, builder: (context) => NewTask(teamId: widget.teamId!));
+                  // Sort action
                 },
+                icon: Icon(Icons.sort, color: Colors.black),
+              ),
+              IconButton(
+                onPressed: () {
+                  // Gallery action
+                },
+                icon: Icon(Icons.grid_view_rounded, color: Colors.black),
               ),
             ],
           ),

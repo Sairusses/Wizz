@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:wizz/custom_widgets/task_card_leader.dart';
-import 'package:wizz/services/auth_service.dart';
-
-import '../services/firestore_service.dart';
 import 'new_task.dart';
 
 class LeaderDashboard extends StatefulWidget {
-  const LeaderDashboard({super.key});
+  final String teamId;
+  final List<Map<String, dynamic>> tasks;
+  const LeaderDashboard({super.key, required this.teamId, required this.tasks});
 
   @override
   LeaderDashboardState createState() => LeaderDashboardState();
@@ -14,78 +13,29 @@ class LeaderDashboard extends StatefulWidget {
 }
 class LeaderDashboardState extends State<LeaderDashboard> {
 
-  String? teamId;
-  bool isLoading = true;
-  List<Map<String, dynamic>> tasks = [];
-
   @override
-  initState() {
+  void initState() {
     super.initState();
-    _initializeTeamId();
-  }
-
-  void _initializeTeamId() async {
-    try {
-      String? team = await FirestoreService().getUserTeam();
-      setState(() {
-        teamId = team;
-      });
-      _fetchInProgressTasks();
-    } catch (error) {
-      setState(() {
-        isLoading = false;
-      });
-      AuthService().showToast("Error fetching team: $error");
-    }
-  }
-  void _fetchInProgressTasks() async {
-    try {
-      if (teamId != null) {
-        List<Map<String, dynamic>> fetchedTasks = await FirestoreService().fetchInProgressTasks(teamId!);
-        setState(() {
-          tasks = fetchedTasks;
-          isLoading = false;
-        });
-      }
-    } catch (error) {
-      setState(() {
-        isLoading = false;
-      });
-      AuthService().showToast("Error fetching tasks: $error");
-    }
   }
 
   @override
   Widget build(BuildContext context) {
-    if(isLoading){
-      return Scaffold(
-        appBar: _AppBar(),
-        body: Container(
-          color: Colors.grey[200],
-          padding: EdgeInsets.all(20),
-          child: Center(
-            child: CircularProgressIndicator(color: Colors.black54),
-          )
+    return Scaffold(
+      appBar: _AppBar(),
+      body: Container(
+        color: Colors.grey[200],
+        padding: EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            TasksTitle(teamId: widget.teamId,),
+            SizedBox(height: 8,),
+            TasksCardLeader(tasks: widget.tasks),
+          ],
         ),
-      );
-    }else{
-      return Scaffold(
-        appBar: _AppBar(),
-        body: Container(
-          color: Colors.grey[200],
-          padding: EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              TasksTitle(teamId: teamId,),
-              SizedBox(height: 8,),
-              TasksCardLeader(tasks: tasks),
-            ],
-          ),
-        ),
-      );
-    }
+      ),
+    );
   }
 }
 
@@ -136,7 +86,6 @@ class TasksTitle extends StatefulWidget{
   @override
   TasksTitleState createState() => TasksTitleState();
 }
-
 class TasksTitleState extends State<TasksTitle>{
 
   @override

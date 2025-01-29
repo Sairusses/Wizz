@@ -1,10 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
-import 'package:wizz/custom_widgets/task_card_member.dart';
 import 'package:wizz/services/auth_service.dart';
 import 'package:wizz/services/firestore_service.dart';
 

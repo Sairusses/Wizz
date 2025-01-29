@@ -1,24 +1,10 @@
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:device_preview_plus/device_preview_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:provider/provider.dart';
-import 'package:wizz/custom_widgets/task_card_member.dart';
-import 'package:wizz/leader_screens/leader_dashboard.dart';
-import 'package:wizz/leader_screens/new_task.dart';
-import 'package:wizz/main_screens/home_screen.dart';
-import 'package:wizz/role_selection/create_team.dart';
-import 'package:wizz/services/firestore_service.dart';
 import 'firebase_options.dart';
-
-import 'package:wizz/role_selection/join_team.dart';
-import 'package:wizz/role_selection/select_role_screen.dart';
 import 'login_signup/login_screen.dart';
-import 'member_screens/member_dashboard.dart';
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -44,19 +30,10 @@ Future<void> main() async {
   // );
 
   runApp(
-      MultiProvider(
-        providers: [
-          StreamProvider<QuerySnapshot?>.value(
-            value: FirebaseFirestore.instance.collection('teams').snapshots(),
-            initialData: null,
-            catchError: (_, __) => null,
-          ),
-        ],
-        child: DevicePreview(
-            enabled: !kReleaseMode,
-            builder: (context) => Home()
-        ),
-      ),
+    DevicePreview(
+        enabled: !kReleaseMode,
+        builder: (context) => Home()
+    ),
   );
 
 }

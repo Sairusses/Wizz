@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_floating_bottom_bar/flutter_floating_bottom_bar.dart';
@@ -24,12 +25,18 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
   late TabController tabController;
   late int currentPage;
   ValueNotifier<bool> isBottomBarVisible = ValueNotifier(true);
+  String? userId;
   String? teamId;
-  List<Map<String, dynamic>> tasks = [];
+  List<Map<String, dynamic>> allTasks = [];
+  List<Map<String, dynamic>> allTasksAssignedToMember = [];
+  List<Map<String, dynamic>> inProgressTasksAssignedToMember = [];
+  List<Map<String, dynamic>> completedTasksAssignedToMember = [];
+  List<Map<String, dynamic>> dueTodayTasksAssignedToMember = [];
   bool isLoading = true;
 
   @override
   void initState() {
+    userId = FirebaseAuth.instance.currentUser?.uid;
     _initializeTeamId();
     currentPage = 0;
     tabController = TabController(length: 5, vsync: this);
@@ -50,7 +57,7 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
       setState(() {
         teamId = team;
       });
-      _fetchInProgressTasks();
+      _fetchAllTasks();
     } catch (error) {
       setState(() {
         isLoading = false;
@@ -58,14 +65,32 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
       AuthService().showToast("Error fetching team: $error");
     }
   }
-  void _fetchInProgressTasks() async {
+  void _fetchAllTasks() async {
     try {
       if (teamId != null) {
-        List<Map<String, dynamic>> fetchedTasks = await FirestoreService().fetchInProgressTasks(teamId!);
-        setState(() {
-          tasks = fetchedTasks;
-          isLoading = false;
-        });
+        if(widget.role == 'leader'){
+          List<Map<String, dynamic>> fetchedAllTasks = await FirestoreService().fetchAllTasks(teamId!);
+          setState(() {
+            allTasks = fetchedAllTasks;
+            isLoading = false;
+          });
+        }else{
+          List<Map<String, dynamic>> fetchedAllTasksAssignedToMember
+          = await FirestoreService().fetchAllTasksAssignedToUser(userId!, teamId!);
+          List<Map<String, dynamic>> fetchedInProgressTasksAssignedToMember
+          = await FirestoreService().fetchInProgressTasksAssignedTo(userId!, teamId!);
+          List<Map<String, dynamic>> fetchedCompletedTasksAssignedToMember
+          = await FirestoreService().fetchCompletedTasksAssignedTo(userId!, teamId!);
+          List<Map<String, dynamic>> fetchedDueTodayTasksAssignedToMember
+          = await FirestoreService().fetchDueTodayTasksAssignedTo(userId!, teamId!);
+          setState(() {
+            allTasksAssignedToMember = fetchedAllTasksAssignedToMember;
+            inProgressTasksAssignedToMember = fetchedInProgressTasksAssignedToMember;
+            completedTasksAssignedToMember = fetchedCompletedTasksAssignedToMember;
+            dueTodayTasksAssignedToMember = fetchedDueTodayTasksAssignedToMember;
+            isLoading = false;
+          });
+        }
       }
     } catch (error) {
       setState(() {
@@ -93,28 +118,36 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
   Widget build(BuildContext context) {
     if(isLoading){
       return Scaffold(
-        body: Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          backgroundColor: Colors.white,
-          child: Padding(
-            padding: const EdgeInsets.all(10),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const CircularProgressIndicator(color: Colors.black54),
-                const SizedBox(height: 10),
-                const Text(
-                  'Loading leader dashboard...',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+        backgroundColor: Colors.grey[200],
+        body: Center(
+          child: Dialog(
+            elevation: 5,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            backgroundColor: Colors.white,
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: SizedBox(
+                height: MediaQuery.of(context).size.height*.4,
+                width: MediaQuery.of(context).size.width*.4,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const CircularProgressIndicator(color: Colors.black54),
+                    const SizedBox(height: 10),
+                    const Text(
+                      'Loading user data...',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 16,
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ),
@@ -122,119 +155,127 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
     }else{
       return Scaffold(
         body: ValueListenableBuilder<bool>(
-            valueListenable: isBottomBarVisible,
-            builder: (context, isVisible, child){
-              return BottomBar(
-                clip: Clip.none,
-                fit: StackFit.expand,
-                icon: (width, height) => Center(
-                  child: IconButton(
-                    padding: EdgeInsets.zero,
-                    onPressed: null,
-                    icon: Icon(
-                      Icons.arrow_upward_rounded,
-                      color: Colors.white,
-                      size: width,
-                    ),
+          valueListenable: isBottomBarVisible,
+          builder: (context, isVisible, child){
+            return BottomBar(
+              clip: Clip.none,
+              fit: StackFit.expand,
+              icon: (width, height) => Center(
+                child: IconButton(
+                  padding: EdgeInsets.zero,
+                  onPressed: null,
+                  icon: Icon(
+                    Icons.arrow_upward_rounded,
+                    color: Colors.white,
+                    size: width,
                   ),
                 ),
-                borderRadius: BorderRadius.circular(250),
-                duration: Duration(milliseconds: 500),
-                curve: Curves.fastOutSlowIn,
-                showIcon: true,
-                width: MediaQuery.of(context).size.width * 0.8,
-                barColor: Colors.black87,
-                start: 2,
-                end: 0,
-                offset: 10,
-                iconHeight: 35,
-                iconWidth: 35,
-                barAlignment: Alignment.bottomCenter,
-                hideOnScroll: true,
-                scrollOpposite: false,
-                body: (context, controller) => TabBarView(
+              ),
+              borderRadius: BorderRadius.circular(250),
+              duration: Duration(milliseconds: 500),
+              curve: Curves.fastOutSlowIn,
+              showIcon: true,
+              width: MediaQuery.of(context).size.width * 0.8,
+              barColor: Colors.black87,
+              start: 2,
+              end: 0,
+              offset: 10,
+              iconHeight: 35,
+              iconWidth: 35,
+              barAlignment: Alignment.bottomCenter,
+              hideOnScroll: true,
+              scrollOpposite: false,
+              body: (context, controller) => TabBarView(
+                controller: tabController,
+                dragStartBehavior: DragStartBehavior.down,
+                children: [
+                  widget.role == "member"
+                    ? MemberDashboard(
+                      controller: controller,
+                      userId: userId!,
+                      teamId: teamId!,
+                      allTasks: allTasksAssignedToMember,
+                      inProgressTasks: inProgressTasksAssignedToMember,
+                      completedTasks: completedTasksAssignedToMember,
+                      dueTodayTasks: dueTodayTasksAssignedToMember,
+                    )
+                    : LeaderDashboard(teamId: teamId!, tasks: allTasks),
+                  ChatsScreen(),
+                  AIWindowScreen(),
+                  widget.role == "member" ? ReportsMember() : ReportsLeader(),
+                  ProfileScreen(),
+                ]
+              ),
+              child: Stack(
+                alignment: Alignment.center,
+                clipBehavior: Clip.none,
+                children: [
+                  TabBar(
+                    dividerColor: Colors.transparent,
+                    indicatorPadding: const EdgeInsets.fromLTRB(6, 0, 6, 0),
                     controller: tabController,
-                    dragStartBehavior: DragStartBehavior.down,
-                    children: [
-                      widget.role == "member"
-                          ? MemberDashboard(controller: controller)
-                          : LeaderDashboard(teamId: teamId!, tasks: tasks),
-                      ChatsScreen(),
-                      AIWindowScreen(),
-                      widget.role == "member" ? ReportsMember() : ReportsLeader(),
-                      ProfileScreen(),
-                    ]
-                ),
-                child: Stack(
-                  alignment: Alignment.center,
-                  clipBehavior: Clip.none,
-                  children: [
-                    TabBar(
-                      dividerColor: Colors.transparent,
-                      indicatorPadding: const EdgeInsets.fromLTRB(6, 0, 6, 0),
-                      controller: tabController,
-                      indicator: UnderlineTabIndicator(
-                          borderSide: BorderSide(
-                            color: Colors.blueGrey,
-                            width: 4,
-                          ),
-                          insets: EdgeInsets.fromLTRB(16, 0, 16, 8)),
-                      tabs: [
-                        SizedBox(
-                          height: 55,
-                          width: 40,
-                          child: Center(
-                              child: Icon(
-                                Icons.home,
-                                color: currentPage == 0 ? Colors.blueGrey : Colors.white,
-                              )),
-                        ),
-                        SizedBox(
-                          height: 55,
-                          width: 40,
-                          child: Center(
-                            child: Icon(
-                              Icons.chat,
-                              color: currentPage == 1 ? Colors.blueGrey : Colors.white,
-                            ),
+                    indicator: UnderlineTabIndicator(
+                      borderSide: BorderSide(
+                        color: Colors.blueGrey,
+                        width: 4,
+                      ),
+                      insets: EdgeInsets.fromLTRB(16, 0, 16, 8)),
+                    tabs: [
+                      SizedBox(
+                        height: 55,
+                        width: 40,
+                        child: Center(
+                          child: Icon(
+                            Icons.home,
+                            color: currentPage == 0 ? Colors.blueGrey : Colors.white,
+                          )),
+                      ),
+                      SizedBox(
+                        height: 55,
+                        width: 40,
+                        child: Center(
+                          child: Icon(
+                            Icons.chat,
+                            color: currentPage == 1 ? Colors.blueGrey : Colors.white,
                           ),
                         ),
-                        SizedBox(
-                          height: 55,
-                          width: 40,
-                          child: Center(
-                            child: Icon(
-                              Symbols.robot_2,
-                              color: currentPage == 2 ? Colors.blueGrey : Colors.white,
-                            ),
+                      ),
+                      SizedBox(
+                        height: 55,
+                        width: 40,
+                        child: Center(
+                          child: Icon(
+                            Symbols.robot_2,
+                            color: currentPage == 2 ? Colors.blueGrey : Colors.white,
                           ),
                         ),
-                        SizedBox(
-                          height: 55,
-                          width: 40,
-                          child: Center(
-                            child: Icon(
-                              Symbols.graph_3,
-                              color: currentPage == 3 ? Colors.blueGrey : Colors.white,
-                            ),
+                      ),
+                      SizedBox(
+                        height: 55,
+                        width: 40,
+                        child: Center(
+                          child: Icon(
+                            Symbols.graph_3,
+                            color: currentPage == 3 ? Colors.blueGrey : Colors.white,
                           ),
                         ),
-                        SizedBox(
-                          height: 55,
-                          width: 40,
-                          child: Center(
-                            child: Icon(
-                              Icons.person,
-                              color: currentPage == 4 ? Colors.blueGrey : Colors.white,
-                            ),
+                      ),
+                      SizedBox(
+                        height: 55,
+                        width: 40,
+                        child: Center(
+                          child: Icon(
+                            Icons.person,
+                            color: currentPage == 4 ? Colors.blueGrey : Colors.white,
                           ),
                         ),
-                      ],
-                    ),
-                  ],
-                ),
-              );
-            }
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            );
+          }
         ),
       );
     }

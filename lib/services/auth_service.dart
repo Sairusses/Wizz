@@ -95,7 +95,7 @@ class AuthService {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const Center(child: CircularProgressIndicator(color: Colors.blueGrey)),
+      builder: (context) => const Center(child: CircularProgressIndicator(color: Colors.black54)),
     );
   }
   String _getFirebaseErrorMessage(String errorCode) {

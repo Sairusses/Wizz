@@ -21,7 +21,7 @@ class TaskCardMember extends StatelessWidget {
           .doc(teamId)
           .collection('tasks')
           .doc(taskId)
-          .update({'status': 'completed'});
+          .update({'status': 'Completed'});
   }
 
   String formatDueDate(dynamic dueDate) {
@@ -86,13 +86,13 @@ class TaskCardMember extends StatelessWidget {
                     ),
                     TextButton(
                       onPressed:
-                      task['status'] == 'completed' ? null : markTaskComplete,
+                      task['status'] == 'Completed' ? null : markTaskComplete,
                       child: Text(
-                          task['status'] == 'completed'
+                          task['status'] == 'Completed'
                               ? "Completed"
                               : "Mark Complete",
                           style: TextStyle(
-                              color: task['status'] == 'completed'
+                              color: task['status'] == 'Completed'
                                   ? Colors.green[900]
                                   : Colors.blueGrey[900])),
                     ),

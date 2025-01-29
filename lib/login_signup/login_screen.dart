@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:wizz/custom_widgets/custom_text_form_field.dart';
 import 'package:wizz/services/auth_service.dart';
 import 'sign_up_screen.dart';
@@ -19,8 +18,8 @@ class LoginScreenState extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    emailController.text = 'leader1@leader1.com';
-    passwordController.text = 'leader1@leader1.com';
+    emailController.text = 'member1@member1.com';
+    passwordController.text = 'member1@member1.com';
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.grey[200],

@@ -1,31 +1,28 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:wizz/custom_widgets/custom_tab_indicator.dart';
-import 'package:wizz/services/firestore_service.dart';
 import '../custom_widgets/task_card_member.dart';
 
 
 class MemberDashboard extends StatefulWidget {
+  final String userId;
+  final String teamId;
+  final List<Map<String, dynamic>> allTasks;
+  final List<Map<String, dynamic>> inProgressTasks;
+  final List<Map<String, dynamic>> completedTasks;
+  final List<Map<String, dynamic>> dueTodayTasks;
   final ScrollController controller;
-  const MemberDashboard({super.key, required this.controller});
+  const MemberDashboard({super.key, required this.controller, required this.userId, required this.teamId, required this.allTasks, required this.inProgressTasks, required this.completedTasks, required this.dueTodayTasks});
 
   @override
   MemberDashboardState createState() => MemberDashboardState();
 }
 
 class MemberDashboardState extends State<MemberDashboard> with SingleTickerProviderStateMixin {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  String? userId;
-  String? teamId;
   late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
-    userId = FirebaseAuth.instance.currentUser?.uid;
-    _loadUserTeam();
     _tabController = TabController(length: 4, vsync: this);
   }
 
@@ -35,29 +32,20 @@ class MemberDashboardState extends State<MemberDashboard> with SingleTickerProvi
     _tabController.dispose();
   }
 
-  Future<void> _loadUserTeam() async {
-    String? fetchedTeamId = await FirestoreService().getUserTeam();
-    setState(() {
-      teamId = fetchedTeamId;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    return StreamProvider<QuerySnapshot?>.value(
-      value: teamId != null
-          ? _firestore.collection('teams').doc(teamId).collection('tasks').snapshots()
-          : null,
-      initialData: null,
-      child: Scaffold(
-        backgroundColor: Color(0xf3f3f3f3),
-        appBar: _AppBar(),
-        body: _TasksTabView(
-          teamId: teamId,
-          userId: userId,
-          tabController: _tabController,
-          scrollController: widget.controller,
-        ),
+    return Scaffold(
+      backgroundColor: Color(0xf3f3f3f3),
+      appBar: _AppBar(),
+      body: _TasksTabView(
+        teamId: widget.teamId,
+        userId: widget.userId,
+        tabController: _tabController,
+        scrollController: widget.controller,
+        allTasks: widget.allTasks,
+        inProgressTasks: widget.inProgressTasks,
+        completedTasks: widget.completedTasks,
+        dueTodayTasks: widget.dueTodayTasks,
       ),
     );
   }
@@ -98,146 +86,132 @@ class _AppBar extends StatelessWidget implements PreferredSizeWidget{
 }
 
 class _AllTasksList extends StatelessWidget {
-  final String? teamId;
-  final String? userId;
+  final List<Map<String, dynamic>> tasks;
+  final String teamId;
 
-  const _AllTasksList({required this.teamId, required this.userId,});
+  const _AllTasksList({required this.tasks, required this.teamId,});
 
   @override
   Widget build(BuildContext context) {
-    final tasksSnapshot = Provider.of<QuerySnapshot?>(context);
-
-    if (tasksSnapshot == null) {
-      return Center(child: CircularProgressIndicator(color: Colors.blueGrey,));
-    }
-
-    final tasks = tasksSnapshot.docs.where((doc) => doc['assigned_to'] == userId).toList();
-
     if (tasks.isEmpty) {
-      return Center(child: Text("No tasks available."));
+      return const Center(child: Text("No tasks assigned."));
     }
 
-    return ListView(
-      children: tasks.map((doc) {
-        Map<String, dynamic> task = doc.data() as Map<String, dynamic>;
-        return TaskCardMember(task: task, taskId: doc.id, teamId: teamId!);
-      }).toList(),
+    return ListView.builder(
+      itemCount: tasks.length,
+      itemBuilder: (context, index) {
+        final task = tasks[index];
+
+        return TaskCardMember(
+          task: task,
+          taskId: task['id'],
+          teamId: teamId,
+        );
+      },
     );
   }
 }
 
 class _InProgressTasksList extends StatelessWidget {
-  final String? userId;
-  final String? teamId;
+  final List<Map<String, dynamic>> tasks;
+  final String teamId;
 
-  const _InProgressTasksList({required this.teamId, required this.userId});
+  const _InProgressTasksList({required this.teamId, required this.tasks});
 
   @override
   Widget build(BuildContext context) {
-    final tasksSnapshot = Provider.of<QuerySnapshot?>(context);
-
-    if (tasksSnapshot == null) {
-      return Center(child: CircularProgressIndicator(color: Colors.blueGrey,));
-    }
-
-    final tasks = tasksSnapshot.docs
-        .where((doc) => doc['assigned_to'] == userId && doc['status'] == 'in progress')
-        .toList();
-
     if (tasks.isEmpty) {
-      return Center(child: Text("No tasks in progress."));
+      return const Center(child: Text("No tasks in progress."));
     }
 
-    return ListView(
-      children: tasks.map((doc) {
-        Map<String, dynamic> task = doc.data() as Map<String, dynamic>;
-        return TaskCardMember(task: task, taskId: doc.id, teamId: teamId!);
-      }).toList(),
+    return ListView.builder(
+      itemCount: tasks.length,
+      itemBuilder: (context, index) {
+        final task = tasks[index];
+
+        return TaskCardMember(
+          task: task,
+          taskId: task['id'],
+          teamId: teamId,
+        );
+      },
     );
   }
 }
 
 class _CompletedTasksList extends StatelessWidget {
-  final String? userId;
-  final String? teamId;
+  final List<Map<String, dynamic>> tasks;
+  final String teamId;
 
-  const _CompletedTasksList({required this.teamId, required this.userId});
+  const _CompletedTasksList({required this.teamId, required this.tasks});
 
   @override
   Widget build(BuildContext context) {
-    final tasksSnapshot = Provider.of<QuerySnapshot?>(context);
-
-    if (tasksSnapshot == null) {
-      return Center(child: CircularProgressIndicator(color: Colors.blueGrey,));
-    }
-
-    final tasks = tasksSnapshot.docs
-        .where((doc) => doc['assigned_to'] == userId && doc['status'] == 'completed')
-        .toList();
-
     if (tasks.isEmpty) {
-      return Center(child: Text("No completed tasks."));
+      return const Center(child: Text("No tasks completed."));
     }
 
-    return ListView(
-      children: tasks.map((doc) {
-        Map<String, dynamic> task = doc.data() as Map<String, dynamic>;
-        return TaskCardMember(task: task, taskId: doc.id, teamId: teamId!);
-      }).toList(),
+    return ListView.builder(
+      itemCount: tasks.length,
+      itemBuilder: (context, index) {
+        final task = tasks[index];
+
+        return TaskCardMember(
+          task: task,
+          taskId: task['id'],
+          teamId: teamId,
+        );
+      },
     );
   }
 }
 
 class _DueTodayTasksList extends StatelessWidget {
-  final String? userId;
-  final String? teamId;
+  final List<Map<String, dynamic>> tasks;
+  final String teamId;
 
-  const _DueTodayTasksList({required this.teamId, required this.userId});
+  const _DueTodayTasksList({required this.teamId, required this.tasks});
 
   @override
   Widget build(BuildContext context) {
-    final tasksSnapshot = Provider.of<QuerySnapshot?>(context);
-
-    if (tasksSnapshot == null) {
-      return Center(child: CircularProgressIndicator(color: Colors.blueGrey,));
-    }
-
-    DateTime today = DateTime.now();
-    Timestamp startOfDay = Timestamp.fromDate(DateTime(today.year, today.month, today.day, 0, 0, 0));
-    Timestamp endOfDay = Timestamp.fromDate(DateTime(today.year, today.month, today.day, 23, 59, 59));
-
-    final tasks = tasksSnapshot.docs
-        .where((doc) =>
-    doc['assigned_to'] == userId &&
-        doc['due_date'] is Timestamp &&
-        (doc['due_date'] as Timestamp).compareTo(startOfDay) >= 0 &&
-        (doc['due_date'] as Timestamp).compareTo(endOfDay) <= 0)
-        .toList();
-
     if (tasks.isEmpty) {
-      return Center(child: Text("No tasks due today."));
+      return const Center(child: Text("No tasks completed."));
     }
 
-    return ListView(
-      children: tasks.map((doc) {
-        Map<String, dynamic> task = doc.data() as Map<String, dynamic>;
-        return TaskCardMember(task: task, taskId: doc.id, teamId: teamId!);
-      }).toList(),
+    return ListView.builder(
+      itemCount: tasks.length,
+      itemBuilder: (context, index) {
+        final task = tasks[index];
+
+        return TaskCardMember(
+          task: task,
+          taskId: task['id'],
+          teamId: teamId,
+        );
+      },
     );
   }
 }
 
 class _TasksTabView extends StatelessWidget {
-  final String? teamId;
-  final String? userId;
+  final String teamId;
+  final String userId;
   final TabController tabController;
   final ScrollController scrollController;
+  final List<Map<String, dynamic>> allTasks;
+  final List<Map<String, dynamic>> inProgressTasks;
+  final List<Map<String, dynamic>> completedTasks;
+  final List<Map<String, dynamic>> dueTodayTasks;
 
   const _TasksTabView({
     required this.teamId,
     required this.userId,
     required this.tabController,
     required this.scrollController,
+    required this.allTasks,
+    required this.inProgressTasks,
+    required this.completedTasks,
+    required this.dueTodayTasks,
   });
 
   @override
@@ -278,10 +252,10 @@ class _TasksTabView extends StatelessWidget {
         body: TabBarView(
           controller: tabController,
           children: [
-            _AllTasksList(teamId: teamId, userId: userId,),
-            _InProgressTasksList(teamId: teamId, userId: userId,),
-            _CompletedTasksList(teamId: teamId, userId: userId,),
-            _DueTodayTasksList(teamId: teamId, userId: userId,),
+            _AllTasksList(tasks: allTasks, teamId: teamId,),
+            _InProgressTasksList(tasks: inProgressTasks, teamId: teamId,),
+            _CompletedTasksList(tasks: completedTasks, teamId: teamId,),
+            _DueTodayTasksList(tasks: dueTodayTasks, teamId: teamId,),
           ],
         ),
       ),

@@ -121,7 +121,7 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
         backgroundColor: Colors.grey[200],
         body: Center(
           child: Dialog(
-            elevation: 5,
+            elevation: 10,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),

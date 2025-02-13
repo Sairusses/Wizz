@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class TasksCardLeader extends StatelessWidget {
+  final double height;
   final List<Map<String, dynamic>> tasks;
 
-  const TasksCardLeader({super.key, required this.tasks});
+  const TasksCardLeader({super.key, required this.tasks, required this.height});
 
   String formatDueDate(dynamic dueDate) {
     if (dueDate is Timestamp) {
@@ -17,7 +18,7 @@ class TasksCardLeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: MediaQuery.of(context).size.height * .7,
+      height: height,
       child: tasks.isNotEmpty
           ? ListView.builder(
         itemCount: tasks.length,

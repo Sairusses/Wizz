@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:wizz/custom_widgets/task_card_leader.dart';
-import 'package:wizz/leader_screens/leader_tasks_gallery.dart';
 import 'new_task.dart';
 
-class LeaderDashboard extends StatefulWidget {
+class LeaderTasksGallery extends StatefulWidget {
   final String teamId;
   final List<Map<String, dynamic>> tasks;
-  const LeaderDashboard({super.key, required this.teamId, required this.tasks});
+  const LeaderTasksGallery({super.key, required this.teamId, required this.tasks});
 
   @override
-  LeaderDashboardState createState() => LeaderDashboardState();
+  LeaderTasksGalleryState createState() => LeaderTasksGalleryState();
 
 }
-class LeaderDashboardState extends State<LeaderDashboard> {
+class LeaderTasksGalleryState extends State<LeaderTasksGallery> {
 
   @override
   void initState() {
@@ -30,9 +29,9 @@ class LeaderDashboardState extends State<LeaderDashboard> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            TasksTitle(teamId: widget.teamId, tasks: widget.tasks, ),
+            TasksTitle(teamId: widget.teamId,),
             SizedBox(height: 8,),
-            TasksCardLeader(tasks: widget.tasks, height: MediaQuery.of(context).size.height * .25,),
+            TasksCardLeader(tasks: widget.tasks, height: MediaQuery.of(context).size.height * 0.75),
           ],
         ),
       ),
@@ -45,6 +44,15 @@ class _AppBar extends StatelessWidget implements PreferredSizeWidget{
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      leading: IconButton(
+          onPressed: (){
+            Navigator.pop(context);
+          },
+          icon: Icon(
+            Icons.arrow_back_ios_new,
+            color: Colors.black,
+          )
+      ),
       scrolledUnderElevation: 0,
       bottom: PreferredSize(
           preferredSize: const Size.fromHeight(4.0),
@@ -54,7 +62,7 @@ class _AppBar extends StatelessWidget implements PreferredSizeWidget{
           )
       ),
       backgroundColor: Colors.white,
-      title: Text('Dashboard',
+      title: Text('Tasks Gallery',
         style: TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.black,
@@ -82,8 +90,7 @@ class _AppBar extends StatelessWidget implements PreferredSizeWidget{
 
 class TasksTitle extends StatefulWidget{
   final String? teamId;
-  final List<Map<String, dynamic>> tasks;
-  const TasksTitle({super.key, required this.teamId, required this.tasks});
+  const TasksTitle({super.key, required this.teamId});
 
   @override
   TasksTitleState createState() => TasksTitleState();
@@ -128,12 +135,9 @@ class TasksTitleState extends State<TasksTitle>{
             children: [
               IconButton(
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => LeaderTasksGallery(teamId: widget.teamId!, tasks: widget.tasks)),
-                  );
+                  // Sort action
                 },
-                icon: Icon(Icons.grid_view_rounded, color: Colors.black),
+                icon: Icon(Icons.sort, color: Colors.black),
               ),
             ],
           ),

@@ -9,22 +9,33 @@ class BudgetService {
     int totalSpent = 0;
 
     try {
-      // Reference to the tasks subcollection under a specific team
-      QuerySnapshot tasksSnapshot = await _firestore
+      QuerySnapshot taskSnapshot = await _firestore
           .collection('teams')
           .doc(teamId)
           .collection('tasks')
           .get();
 
-      for (var task in tasksSnapshot.docs) {
-        int taskBudget = (task.data() as Map<String, dynamic>)['budget'] ?? 0.0;
-        totalSpent += taskBudget;
-      }
-    } catch (e) {
-      print("Error fetching budget: $e");
-    }
+      Set<String> uniqueTitles = {};
 
-    return totalSpent;
+      for (var taskDoc in taskSnapshot.docs) {
+        Map<String, dynamic> taskData = taskDoc.data() as Map<String, dynamic>;
+
+        if (taskData.containsKey('title') && taskData.containsKey('budget')) {
+          String title = taskData['title'];
+          int budget = taskData['budget'] ?? 0;
+
+          if (!uniqueTitles.contains(title)) {
+            uniqueTitles.add(title);
+            totalSpent += budget;
+          }
+        }
+      }
+
+      return totalSpent;
+    } catch (e) {
+      print("Error fetching total spent budget: $e");
+      return 0;
+    }
   }
 
   Future<void> setTeamBudget(String teamId, int budget) async {

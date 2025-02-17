@@ -222,7 +222,7 @@ class CreateTeam extends StatelessWidget{
               // Navigate to the desired screen
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => HomeScreen(role: 'leader')),
+                MaterialPageRoute(builder: (context) => HomeScreen()),
               );
             } catch (error) {
               // Close loading indicator

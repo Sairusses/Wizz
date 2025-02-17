@@ -64,7 +64,7 @@ class AuthService {
             'users').doc(user.uid).get();
         String role = userDoc['role'];
         Navigator.pop(context);
-        role == "" ? _navigateTo(context, SelectRole()) : _navigateTo(context, HomeScreen(role: role));
+        role == "" ? _navigateTo(context, SelectRole()) : _navigateTo(context, HomeScreen());
       }
     } on FirebaseAuthException catch (e) {
       showToast(_getFirebaseErrorMessage(e.code));

@@ -177,7 +177,7 @@ class _JoinButton extends StatelessWidget {
             Navigator.pop(context);
             Navigator.pushAndRemoveUntil(
               context,
-              MaterialPageRoute(builder: (context) => HomeScreen(role: 'member')),
+              MaterialPageRoute(builder: (context) => HomeScreen()),
               (Route<dynamic> route) => false,
             );
           } else {

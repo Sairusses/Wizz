@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:wizz/main_screens/home_screen.dart';
 import 'firebase_options.dart';
 import 'login_signup/login_screen.dart';
 Future<void> main() async {
@@ -13,21 +15,17 @@ Future<void> main() async {
     persistenceEnabled: true
   );
 
-
-  runApp(
-      Home(),
-  );
-
 //   runApp(
 //     DevicePreview(
 //         enabled: !kReleaseMode,
 //         builder: (context) => Home()
 //     ),
 //   );
-//
+
+  runApp(Home());
+
 }
-//
-//
+
 // class Home extends StatelessWidget {
 //   const Home({super.key});
 //
@@ -39,7 +37,7 @@ Future<void> main() async {
 //       builder: DevicePreview.appBuilder,
 //       theme: ThemeData.light(),
 //       darkTheme: ThemeData.light(),
-//       home: LoginScreen()
+//       home: AuthCheck()
 //     );
 //   }
 // }
@@ -49,13 +47,14 @@ class Home extends StatelessWidget {
   const Home({super.key});
   @override
   Widget build(BuildContext context) {
+    String? uid = FirebaseAuth.instance.currentUser?.uid;
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData.light(),
       darkTheme: ThemeData.light(),
       home: Scaffold(
         resizeToAvoidBottomInset: false,
-        body: LoginScreen(),
+        body: uid == null ? LoginScreen() : HomeScreen(),
       ),
     );
   }

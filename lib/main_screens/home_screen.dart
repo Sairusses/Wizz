@@ -16,8 +16,7 @@ import '../services/team_service.dart';
 import 'chat_screen.dart';
 
 class HomeScreen extends StatefulWidget{
-  final String role;
-  const HomeScreen({required this.role, super.key});
+  const HomeScreen({super.key});
 
   @override
   HomeScreenState createState() => HomeScreenState();
@@ -29,6 +28,7 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
   ValueNotifier<bool> isBottomBarVisible = ValueNotifier(true);
   String? userId;
   String? teamId;
+  String? role;
   List<Map<String, dynamic>> allTasks = [];
   List<Map<String, dynamic>> allTasksAssignedToMember = [];
   List<Map<String, dynamic>> inProgressTasksAssignedToMember = [];
@@ -58,7 +58,9 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
   void _initializeTeamId() async {
     try {
       String? team = await TeamService().getUserTeam();
+      String? role = await TeamService().getUserRole();
       setState(() {
+        this.role = role;
         teamId = team;
       });
       _fetchAllTasks();
@@ -74,7 +76,7 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
   void _fetchAllTasks() async {
     try {
       if (teamId != null) {
-        if(widget.role == 'leader'){
+        if(role == 'leader'){
           List<Map<String, dynamic>> fetchedAllTasks = await TaskService().fetchAllTasks(teamId!);
           setState(() {
             allTasks = fetchedAllTasks;
@@ -204,7 +206,7 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
                 controller: tabController,
                 dragStartBehavior: DragStartBehavior.down,
                 children: [
-                  widget.role == "member"
+                  role == "member"
                     ? MemberDashboard(
                       controller: controller,
                       userId: userId!,
@@ -217,7 +219,7 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
                     : LeaderDashboard(teamId: teamId!, tasks: allTasks, teamBudget: teamBudget, teamBudgetSpent: teamBudgetSpent,),
                   ChatsScreen(),
                   AIWindowScreen(),
-                  widget.role == "member" ? ReportsMember() : ReportsLeader(),
+                  role == "member" ? ReportsMember() : ReportsLeader(),
                   ProfileScreen(),
                 ]
               ),

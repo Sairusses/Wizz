@@ -88,6 +88,23 @@ class TeamService {
       return null;
     }
   }
+  Future<String?> getUserRole() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user == null) return null;
+
+      DocumentSnapshot userDoc = await _firestore.collection('users').doc(user.uid).get();
+
+      if (userDoc.exists) {
+        return userDoc['role'];
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print("Error fetching user role: $e");
+      return null;
+    }
+  }
 
   Future<void> createTeam({
     required String teamName,

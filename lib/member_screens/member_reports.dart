@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wizz/services/firestore_service.dart';
+import 'package:wizz/services/team_service.dart';
 
 class ReportsMember extends StatefulWidget {
   const ReportsMember({super.key});
@@ -20,7 +20,7 @@ class _ReportsMemberState extends State<ReportsMember> {
   Future<void> _loadTasks() async {
     try {
       // Fetch JSON data from Firestore
-      String json = await FirestoreService().getCollectionJson("ZpWOEpGh5qDVb7c6M5Nq");
+      String json = await TeamService().getCollectionJson("ZpWOEpGh5qDVb7c6M5Nq");
       setState(() {
         tasksJson = json; // Update the state
       });

@@ -9,8 +9,10 @@ import 'package:wizz/main_screens/ai_window_screen.dart';
 import 'package:wizz/main_screens/profile_screen.dart';
 import 'package:wizz/member_screens/member_dashboard.dart';
 import 'package:wizz/member_screens/member_reports.dart';
+import 'package:wizz/services/task_service.dart';
 import '../services/auth_service.dart';
-import '../services/firestore_service.dart';
+import '../services/budget_service.dart';
+import '../services/team_service.dart';
 import 'chat_screen.dart';
 
 class HomeScreen extends StatefulWidget{
@@ -32,6 +34,8 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
   List<Map<String, dynamic>> inProgressTasksAssignedToMember = [];
   List<Map<String, dynamic>> completedTasksAssignedToMember = [];
   List<Map<String, dynamic>> dueTodayTasksAssignedToMember = [];
+  late int teamBudget;
+  late int teamBudgetSpent;
   bool isLoading = true;
 
   @override
@@ -53,11 +57,12 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
 
   void _initializeTeamId() async {
     try {
-      String? team = await FirestoreService().getUserTeam();
+      String? team = await TeamService().getUserTeam();
       setState(() {
         teamId = team;
       });
       _fetchAllTasks();
+      _fetchBudget();
     } catch (error) {
       setState(() {
         isLoading = false;
@@ -65,30 +70,29 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
       AuthService().showToast("Error fetching team: $error");
     }
   }
+
   void _fetchAllTasks() async {
     try {
       if (teamId != null) {
         if(widget.role == 'leader'){
-          List<Map<String, dynamic>> fetchedAllTasks = await FirestoreService().fetchAllTasks(teamId!);
+          List<Map<String, dynamic>> fetchedAllTasks = await TaskService().fetchAllTasks(teamId!);
           setState(() {
             allTasks = fetchedAllTasks;
-            isLoading = false;
           });
         }else{
           List<Map<String, dynamic>> fetchedAllTasksAssignedToMember
-          = await FirestoreService().fetchAllTasksAssignedToUser(userId!, teamId!);
+          = await TaskService().fetchAllTasksAssignedToUser(userId!, teamId!);
           List<Map<String, dynamic>> fetchedInProgressTasksAssignedToMember
-          = await FirestoreService().fetchInProgressTasksAssignedTo(userId!, teamId!);
+          = await TaskService().fetchInProgressTasksAssignedTo(userId!, teamId!);
           List<Map<String, dynamic>> fetchedCompletedTasksAssignedToMember
-          = await FirestoreService().fetchCompletedTasksAssignedTo(userId!, teamId!);
+          = await TaskService().fetchCompletedTasksAssignedTo(userId!, teamId!);
           List<Map<String, dynamic>> fetchedDueTodayTasksAssignedToMember
-          = await FirestoreService().fetchDueTodayTasksAssignedTo(userId!, teamId!);
+          = await TaskService().fetchDueTodayTasksAssignedTo(userId!, teamId!);
           setState(() {
             allTasksAssignedToMember = fetchedAllTasksAssignedToMember;
             inProgressTasksAssignedToMember = fetchedInProgressTasksAssignedToMember;
             completedTasksAssignedToMember = fetchedCompletedTasksAssignedToMember;
             dueTodayTasksAssignedToMember = fetchedDueTodayTasksAssignedToMember;
-            isLoading = false;
           });
         }
       }
@@ -98,6 +102,17 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
       });
       AuthService().showToast("Error fetching tasks: $error");
     }
+  }
+
+  void _fetchBudget() async{
+    BudgetService budgetService = BudgetService();
+    int totalBudgetSpent = await budgetService.getTotalSpentBudget(teamId!);
+    int totalBudget = await budgetService.getTeamBudget(teamId!);
+    setState(() {
+      teamBudgetSpent = totalBudgetSpent;
+      teamBudget = totalBudget;
+      isLoading = false;
+    });
   }
 
   void changePage(int newPage) {
@@ -199,7 +214,7 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
                       completedTasks: completedTasksAssignedToMember,
                       dueTodayTasks: dueTodayTasksAssignedToMember,
                     )
-                    : LeaderDashboard(teamId: teamId!, tasks: allTasks),
+                    : LeaderDashboard(teamId: teamId!, tasks: allTasks, teamBudget: teamBudget, teamBudgetSpent: teamBudgetSpent,),
                   ChatsScreen(),
                   AIWindowScreen(),
                   widget.role == "member" ? ReportsMember() : ReportsLeader(),

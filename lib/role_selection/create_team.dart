@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import '../main_screens/home_screen.dart';
-import '../services/firestore_service.dart';
+import '../services/team_service.dart';
 
 class CreateTeam extends StatelessWidget{
   const CreateTeam({super.key});
@@ -202,7 +202,7 @@ class CreateTeam extends StatelessWidget{
 
             try {
               // Call the createTeam method
-              await FirestoreService().createTeam(
+              await TeamService().createTeam(
                 teamName: teamNameController.text.trim(),
                 teamCode: teamCodeController.text.trim(),
                 teamDescription: teamDescriptionController.text.trim(),

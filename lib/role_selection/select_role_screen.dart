@@ -1,10 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:wizz/role_selection/create_team.dart';
 import 'package:wizz/role_selection/join_team.dart';
-import 'package:wizz/services/firestore_service.dart';
-
-import '../services/auth_service.dart';
 
 class SelectRole extends StatelessWidget{
   const SelectRole({super.key});

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:wizz/services/auth_service.dart';
-import 'package:wizz/services/firestore_service.dart';
+import 'package:wizz/services/team_service.dart';
 
 import '../custom_widgets/custom_text_form_field.dart';
 
@@ -473,7 +473,7 @@ class NewTaskState extends State<NewTask>{
                       // Loop through each selected member
                       for (String member in selectedMembers) {
                         // Fetch member ID
-                        String? memberId = await FirestoreService().fetchUserIdByUsername(member);
+                        String? memberId = await TeamService().fetchUserIdByUsername(member);
 
                         if (memberId == null) {
                           AuthService().showToast('User ID not found for member: $member');

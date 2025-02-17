@@ -8,8 +8,11 @@ class ReportsMember extends StatefulWidget {
   State<ReportsMember> createState() => _ReportsMemberState();
 }
 
-class _ReportsMemberState extends State<ReportsMember> {
+class _ReportsMemberState extends State<ReportsMember> with AutomaticKeepAliveClientMixin{
   String? tasksJson;
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -33,6 +36,7 @@ class _ReportsMemberState extends State<ReportsMember> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text("Reports Member"),

@@ -9,7 +9,7 @@ class AIWindowScreen extends StatefulWidget {
   State createState() => ChatScreenState();
 }
 
-class ChatScreenState extends State<AIWindowScreen> {
+class ChatScreenState extends State<AIWindowScreen> with AutomaticKeepAliveClientMixin{
   final TextEditingController _textController = TextEditingController();
   final List<ChatMessage> _messages = <ChatMessage>[];
   final ScrollController _scrollController = ScrollController();
@@ -40,7 +40,8 @@ You are a highly specialized business assistant. Your sole purpose is to respond
     apiKey: "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",
     model: "llama-3.3-70b-versatile", // Set a different model
   );
-
+  @override
+  bool get wantKeepAlive => true;
   @override
   void initState() {
     super.initState();
@@ -67,6 +68,7 @@ You are a highly specialized business assistant. Your sole purpose is to respond
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Gabby AI'),

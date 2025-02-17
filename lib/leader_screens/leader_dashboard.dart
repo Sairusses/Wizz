@@ -16,10 +16,13 @@ class LeaderDashboard extends StatefulWidget {
   LeaderDashboardState createState() => LeaderDashboardState();
 
 }
-class LeaderDashboardState extends State<LeaderDashboard> {
+class LeaderDashboardState extends State<LeaderDashboard> with AutomaticKeepAliveClientMixin<LeaderDashboard>{
   late List<Map<String, dynamic>> tasks;
   late int teamBudget;
   late int teamBudgetSpent;
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -43,6 +46,7 @@ class LeaderDashboardState extends State<LeaderDashboard> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       appBar: _AppBar(),
       body: Container(

@@ -17,8 +17,11 @@ class MemberDashboard extends StatefulWidget {
   MemberDashboardState createState() => MemberDashboardState();
 }
 
-class MemberDashboardState extends State<MemberDashboard> with SingleTickerProviderStateMixin {
+class MemberDashboardState extends State<MemberDashboard> with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   late TabController _tabController;
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -34,6 +37,7 @@ class MemberDashboardState extends State<MemberDashboard> with SingleTickerProvi
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       backgroundColor: Color(0xf3f3f3f3),
       appBar: _AppBar(),

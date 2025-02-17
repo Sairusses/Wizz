@@ -146,8 +146,8 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
             child: Padding(
               padding: const EdgeInsets.all(10),
               child: SizedBox(
-                height: MediaQuery.of(context).size.height*.4,
-                width: MediaQuery.of(context).size.width*.4,
+                height: MediaQuery.of(context).size.height*.25,
+                width: MediaQuery.of(context).size.width*.25,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -190,7 +190,7 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
               ),
               borderRadius: BorderRadius.circular(250),
               duration: Duration(milliseconds: 500),
-              curve: Curves.fastOutSlowIn,
+              curve: Curves.linear,
               showIcon: true,
               width: MediaQuery.of(context).size.width * 0.8,
               barColor: Colors.black87,
@@ -236,7 +236,8 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
                         color: Colors.blueGrey,
                         width: 4,
                       ),
-                      insets: EdgeInsets.fromLTRB(16, 0, 16, 8)),
+                      insets: EdgeInsets.fromLTRB(16, 0, 16, 8)
+                    ),
                     tabs: [
                       SizedBox(
                         height: 55,
@@ -297,6 +298,4 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
       );
     }
   }
-
-
 }

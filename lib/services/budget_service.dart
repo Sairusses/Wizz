@@ -22,7 +22,8 @@ class BudgetService {
 
         if (taskData.containsKey('title') && taskData.containsKey('budget')) {
           String title = taskData['title'];
-          int budget = taskData['budget'] ?? 0;
+          var budgetValue = taskData['budget'];
+          int budget = budgetValue.toInt();
 
           if (!uniqueTitles.contains(title)) {
             uniqueTitles.add(title);
@@ -30,7 +31,6 @@ class BudgetService {
           }
         }
       }
-
       return totalSpent;
     } catch (e) {
       print("Error fetching total spent budget: $e");

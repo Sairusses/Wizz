@@ -45,12 +45,17 @@ class LeaderDashboardState extends State<LeaderDashboard> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _AppBar(),
-      body: RefreshIndicator(
-        onRefresh: _refreshData,
-        child: SingleChildScrollView(
-          physics: AlwaysScrollableScrollPhysics(),
-          child: Padding(
-            padding: const EdgeInsets.all(20),
+      body: Container(
+        height: double.infinity,
+        color: Colors.grey[50],
+        padding: const EdgeInsets.all(20),
+        child: RefreshIndicator(
+          displacement: 15,
+          color: Colors.black,
+          backgroundColor: Colors.white,
+          onRefresh: _refreshData,
+          child: SingleChildScrollView(
+            physics: AlwaysScrollableScrollPhysics(),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -238,6 +243,7 @@ class BudgetOverview extends StatelessWidget {
     Color progressColor = (spent > total) ? Colors.red.shade700 : Colors.black87;
 
     return Card(
+      color: Colors.white,
       elevation: 2,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),

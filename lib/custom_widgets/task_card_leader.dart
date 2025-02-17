@@ -26,6 +26,7 @@ class TasksCardLeader extends StatelessWidget {
         itemBuilder: (context, index) {
           final task = tasks[index];
           return Card(
+            color: Colors.white,
             elevation: 4,
             child: Padding(
               padding: const EdgeInsets.all(16.0),

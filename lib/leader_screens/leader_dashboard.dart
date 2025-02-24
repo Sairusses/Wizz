@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wizz/custom_widgets/task_card_leader.dart';
+import 'package:wizz/leader_screens/budget_new.dart';
 import 'package:wizz/leader_screens/leader_tasks_gallery.dart';
 import 'package:wizz/services/budget_service.dart';
 import 'package:wizz/services/task_service.dart';
@@ -67,7 +68,7 @@ class LeaderDashboardState extends State<LeaderDashboard> with AutomaticKeepAliv
                 SizedBox(height: 8),
                 TasksCardLeader(tasks: tasks, height: MediaQuery.of(context).size.height * .25),
                 SizedBox(height: 16),
-                BudgetTitle(),
+                BudgetTitle(teamBudget: teamBudget, teamBudgetSpent: teamBudgetSpent,),
                 SizedBox(height: 8),
                 BudgetOverview(spent: teamBudgetSpent, total: teamBudget),
               ],
@@ -179,7 +180,9 @@ class TasksTitle extends StatelessWidget{
 }
 
 class BudgetTitle extends StatelessWidget{
-  const BudgetTitle({super.key});
+  final int teamBudget;
+  final int teamBudgetSpent;
+  const BudgetTitle({super.key, required this.teamBudget, required this.teamBudgetSpent});
 
   @override
   Widget build(BuildContext context) {
@@ -194,7 +197,7 @@ class BudgetTitle extends StatelessWidget{
         children: [
           ElevatedButton(
             onPressed: () {
-              //budget on press
+              showDialog(context: context, builder: (context) => BudgetNew(teamBudget: teamBudget, teamBudgetSpent: teamBudgetSpent,));
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.black,
@@ -206,7 +209,7 @@ class BudgetTitle extends StatelessWidget{
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.add, color: Colors.white, size: 16),
+                Icon(Icons.attach_money, color: Colors.white, size: 16),
                 SizedBox(width: 8),
                 Text(
                   'Record Expense',

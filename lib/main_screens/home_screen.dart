@@ -190,7 +190,7 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
               ),
               borderRadius: BorderRadius.circular(250),
               duration: Duration(milliseconds: 500),
-              curve: Curves.linear,
+              curve: Curves.fastOutSlowIn,
               showIcon: true,
               width: MediaQuery.of(context).size.width * 0.8,
               barColor: Colors.black87,
@@ -204,6 +204,7 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
               scrollOpposite: false,
               body: (context, controller) => TabBarView(
                 controller: tabController,
+                physics: PageScrollPhysics(),
                 dragStartBehavior: DragStartBehavior.down,
                 children: [
                   role == "member"

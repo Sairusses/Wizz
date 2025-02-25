@@ -2,6 +2,8 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import 'auth_service.dart';
+
 class BudgetService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -61,6 +63,30 @@ class BudgetService {
     } catch (e) {
       print("Error fetching budget: $e");
       return 0;
+    }
+  }
+
+  Future<void> addExpense({
+    required String title,
+    required String description,
+    required double amount,
+    required Timestamp date,
+    required String teamId
+  }) async {
+    try {
+      CollectionReference expensesCollection = FirebaseFirestore.instance
+          .collection('teams')
+          .doc(teamId)
+          .collection('expenses');
+
+      await expensesCollection.add({
+        'title': title,
+        'description': description,
+        'amount': amount,
+        'date': date,
+      });
+    } catch (e) {
+      AuthService().showToast('Error: $e');
     }
   }
 }

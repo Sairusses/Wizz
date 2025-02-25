@@ -3,21 +3,25 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:wizz/custom_widgets/custom_text_form_field.dart';
+import 'package:wizz/services/auth_service.dart';
+import 'package:wizz/services/budget_service.dart';
 
 class BudgetNew extends StatefulWidget {
   final int teamBudget;
   final int teamBudgetSpent;
-  const BudgetNew({super.key, required this.teamBudget, required this.teamBudgetSpent});
+  final String teamId;
+  const BudgetNew({super.key, required this.teamBudget, required this.teamBudgetSpent, required this.teamId});
   @override
   BudgetNewState createState() => BudgetNewState();
 }
 class BudgetNewState extends State<BudgetNew> with AutomaticKeepAliveClientMixin{
   late int teamBudget;
   late int remainingBudget;
+  TextEditingController titleController = TextEditingController();
   TextEditingController amountController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
-  late Timestamp dueDate;
-  String? dueDateString;
+  late Timestamp date;
+  String? dateString;
   @override
   void initState() {
     teamBudget = widget.teamBudget;
@@ -82,8 +86,15 @@ class BudgetNewState extends State<BudgetNew> with AutomaticKeepAliveClientMixin
             ),
             SizedBox(height: 20,),
             CustomTextFormField(
+              controller: titleController,
+              labelText: 'Title',
+              hint: 'Expense title',
+            ),
+            SizedBox(height: 20,),
+            CustomTextFormField(
               controller: amountController,
               labelText: 'Amount',
+              textInputType: TextInputType.number,
               hint: '0',
               prefixIcon: Icon(Icons.attach_money),
             ),
@@ -137,8 +148,8 @@ class BudgetNewState extends State<BudgetNew> with AutomaticKeepAliveClientMixin
                     );
                     if (pickedDate != null) {
                       setState(() {
-                        dueDate = Timestamp.fromDate(pickedDate);
-                        dueDateString = DateFormat('MMM d, yyyy').format(dueDate.toDate()).toString();
+                        date = Timestamp.fromDate(pickedDate);
+                        dateString = DateFormat('MMM d, yyyy').format(date.toDate()).toString();
                       });
                     } else {
                       Fluttertoast.showToast(
@@ -154,7 +165,7 @@ class BudgetNewState extends State<BudgetNew> with AutomaticKeepAliveClientMixin
                     color: Colors.black,
                   ),
                   label: Text(
-                    dueDateString ?? 'MM / DD / YY',
+                    dateString ?? 'MM / DD / YY',
                     style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
@@ -167,7 +178,15 @@ class BudgetNewState extends State<BudgetNew> with AutomaticKeepAliveClientMixin
             SizedBox(height: 20,),
             ElevatedButton(
               onPressed: () {
-                // Add your onPressed logic here
+                BudgetService().addExpense(
+                    title: titleController.text.trim(),
+                    description: descriptionController.text.trim(),
+                    amount: double.parse(amountController.text),
+                    date: date,
+                    teamId: widget.teamId
+                );
+                AuthService().showToast('Expense added');
+                Navigator.pop(context);
               },
               style: ButtonStyle(
                 backgroundColor: WidgetStatePropertyAll(Colors.black87),

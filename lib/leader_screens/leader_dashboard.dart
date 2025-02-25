@@ -21,6 +21,7 @@ class LeaderDashboardState extends State<LeaderDashboard> with AutomaticKeepAliv
   late List<Map<String, dynamic>> tasks;
   late int teamBudget;
   late int teamBudgetSpent;
+  late String teamId;
 
   @override
   bool get wantKeepAlive => true;
@@ -30,6 +31,7 @@ class LeaderDashboardState extends State<LeaderDashboard> with AutomaticKeepAliv
     tasks = widget.tasks;
     teamBudget = widget.teamBudget;
     teamBudgetSpent = widget.teamBudgetSpent;
+    teamId = widget.teamId;
     super.initState();
   }
 
@@ -68,7 +70,7 @@ class LeaderDashboardState extends State<LeaderDashboard> with AutomaticKeepAliv
                 SizedBox(height: 8),
                 TasksCardLeader(tasks: tasks, height: MediaQuery.of(context).size.height * .25),
                 SizedBox(height: 16),
-                BudgetTitle(teamBudget: teamBudget, teamBudgetSpent: teamBudgetSpent,),
+                BudgetTitle(teamBudget: teamBudget, teamBudgetSpent: teamBudgetSpent, teamId: teamId,),
                 SizedBox(height: 8),
                 BudgetOverview(spent: teamBudgetSpent, total: teamBudget),
               ],
@@ -182,7 +184,8 @@ class TasksTitle extends StatelessWidget{
 class BudgetTitle extends StatelessWidget{
   final int teamBudget;
   final int teamBudgetSpent;
-  const BudgetTitle({super.key, required this.teamBudget, required this.teamBudgetSpent});
+  final String teamId;
+  const BudgetTitle({super.key, required this.teamBudget, required this.teamBudgetSpent, required this.teamId});
 
   @override
   Widget build(BuildContext context) {
@@ -197,7 +200,10 @@ class BudgetTitle extends StatelessWidget{
         children: [
           ElevatedButton(
             onPressed: () {
-              showDialog(context: context, builder: (context) => BudgetNew(teamBudget: teamBudget, teamBudgetSpent: teamBudgetSpent,));
+              showDialog(context: context, builder: (context) => BudgetNew(
+                teamBudget: teamBudget,
+                teamBudgetSpent: teamBudgetSpent,
+                teamId: teamId,));
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.black,

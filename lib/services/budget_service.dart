@@ -33,6 +33,20 @@ class BudgetService {
           }
         }
       }
+
+      QuerySnapshot expenseSnapshot = await _firestore
+          .collection('teams')
+          .doc(teamId)
+          .collection('expenses')
+          .get();
+
+      for (var expensesDoc in expenseSnapshot.docs){
+        Map<String, dynamic> expenseData = expensesDoc.data() as Map<String, dynamic>;
+        var amountValue = expenseData['amount'];
+        int amount = amountValue.toInt();
+        totalSpent += amount;
+      }
+
       return totalSpent;
     } catch (e) {
       print("Error fetching total spent budget: $e");

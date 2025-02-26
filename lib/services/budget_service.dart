@@ -21,7 +21,6 @@ class BudgetService {
 
       for (var taskDoc in taskSnapshot.docs) {
         Map<String, dynamic> taskData = taskDoc.data() as Map<String, dynamic>;
-
         if (taskData.containsKey('title') && taskData.containsKey('budget')) {
           String title = taskData['title'];
           var budgetValue = taskData['budget'];

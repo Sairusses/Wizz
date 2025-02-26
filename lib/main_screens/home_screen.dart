@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -34,6 +35,7 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
   List<Map<String, dynamic>> inProgressTasksAssignedToMember = [];
   List<Map<String, dynamic>> completedTasksAssignedToMember = [];
   List<Map<String, dynamic>> dueTodayTasksAssignedToMember = [];
+  late Map<String, String> userMap;
   late int teamBudget;
   late int teamBudgetSpent;
   bool isLoading = true;
@@ -65,6 +67,7 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
       });
       _fetchAllTasks();
       _fetchBudget();
+      userMap = await fetchUserMap();
     } catch (error) {
       setState(() {
         isLoading = false;
@@ -115,6 +118,15 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
       teamBudget = totalBudget;
       isLoading = false;
     });
+  }
+
+  Future<Map<String, String>> fetchUserMap() async {
+    Map<String, String> userMap = {};
+    QuerySnapshot usersSnapshot = await FirebaseFirestore.instance.collection('users').get();
+    for (var doc in usersSnapshot.docs) {
+      userMap[doc.id] = doc['username'];
+    }
+    return userMap;
   }
 
   void changePage(int newPage) {
@@ -217,7 +229,7 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
                       completedTasks: completedTasksAssignedToMember,
                       dueTodayTasks: dueTodayTasksAssignedToMember,
                     )
-                    : LeaderDashboard(teamId: teamId!, tasks: allTasks, teamBudget: teamBudget, teamBudgetSpent: teamBudgetSpent,),
+                    : LeaderDashboard(teamId: teamId!, tasks: allTasks, teamBudget: teamBudget, teamBudgetSpent: teamBudgetSpent, userMap: userMap,),
                   ChatsScreen(),
                   AIWindowScreen(),
                   role == "member" ? ReportsMember() : ReportsLeader(),

@@ -38,7 +38,7 @@ You are a highly specialized business assistant. Your sole purpose is to respond
 
   final _groq = Groq(
     apiKey: "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",
-    model: "llama-3.3-70b-versatile", // Set a different model
+    model: "deepSeek-r1-distill-llama-70b",
   );
   @override
   bool get wantKeepAlive => true;
@@ -71,7 +71,8 @@ You are a highly specialized business assistant. Your sole purpose is to respond
     super.build(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Gabby AI'),
+        title: const Text('AI'),
+        scrolledUnderElevation: 0,
         actions: [_buildClearChatButton()],
       ),
       body: SafeArea(

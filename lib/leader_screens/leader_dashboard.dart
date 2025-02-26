@@ -201,10 +201,12 @@ class BudgetTitle extends StatelessWidget{
         children: [
           ElevatedButton(
             onPressed: () {
-              showDialog(context: context, builder: (context) => BudgetNew(
-                teamBudget: teamBudget,
-                teamBudgetSpent: teamBudgetSpent,
-                teamId: teamId,));
+              showDialog(context: context, builder: (context) =>
+                BudgetNew(
+                  teamBudget: teamBudget,
+                  teamBudgetSpent: teamBudgetSpent,
+                  teamId: teamId,)
+              );
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.black,

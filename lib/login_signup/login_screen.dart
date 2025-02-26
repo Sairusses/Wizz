@@ -173,15 +173,14 @@ class Header extends StatelessWidget{
       children: [
         Center(
           child: SizedBox(
-            height: 40,
-            width: 40,
+            height: 70,
+            width: 70,
             child: Image(
               image: AssetImage('assets/wizz_icon.png'),
               fit: BoxFit.fill
             ),
           ),
         ),
-        SizedBox(height: 35,),
         Center(
           child: Text('Welcome to Wizz',
           style: TextStyle(

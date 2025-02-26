@@ -81,15 +81,18 @@ class SignUpHeader extends StatelessWidget{
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
       children: [
         Center(
-          child: Text('Join Wizz',
-            style: TextStyle(
-                fontWeight: FontWeight.w700, fontSize: 24, fontFamily: 'Inter', color: Colors.black
+          child: SizedBox(
+            height: 100,
+            width: 100,
+            child: Image(
+                image: AssetImage('assets/wizz_logo.png'),
+                fit: BoxFit.fill
             ),
           ),
         ),
-        SizedBox(height: 10),
         Center(
             child: Text('Start managing projects with AI assistance',
                 textAlign: TextAlign.center,

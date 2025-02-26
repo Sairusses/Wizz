@@ -40,10 +40,7 @@ class Home extends StatelessWidget {
       builder: DevicePreview.appBuilder,
       theme: ThemeData.light(),
       darkTheme: ThemeData.light(),
-      home: Scaffold(
-        resizeToAvoidBottomInset: false,
-        body: uid == null ? LoginScreen() : HomeScreen(),
-      ),
+      home: uid == null ? LoginScreen() : HomeScreen(),
     );
   }
 }
@@ -58,10 +55,7 @@ class Home extends StatelessWidget {
 //       debugShowCheckedModeBanner: false,
 //       theme: ThemeData.light(),
 //       darkTheme: ThemeData.light(),
-//       home: Scaffold(
-//         resizeToAvoidBottomInset: false,
-//         body: uid == null ? LoginScreen() : HomeScreen(),
-//       ),
+//       home:  uid == null ? LoginScreen() : HomeScreen(),
 //     );
 //   }
 // }

@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_floating_bottom_bar/flutter_floating_bottom_bar.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:wizz/leader_screens/leader_dashboard.dart';
 import 'package:wizz/leader_screens/leader_reports.dart';
@@ -147,35 +148,29 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
   Widget build(BuildContext context) {
     if(isLoading){
       return Scaffold(
-        backgroundColor: Colors.grey[200],
+        backgroundColor: Colors.grey[50],
         body: Center(
-          child: Dialog(
-            elevation: 10,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            backgroundColor: Colors.white,
-            child: Padding(
-              padding: const EdgeInsets.all(10),
-              child: SizedBox(
-                height: MediaQuery.of(context).size.height*.25,
-                width: MediaQuery.of(context).size.width*.25,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const CircularProgressIndicator(color: Colors.black54),
-                    const SizedBox(height: 10),
-                    const Text(
-                      'Loading user data...',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 16,
-                        fontWeight: FontWeight.normal,
-                      ),
+          child: SizedBox(
+            width: MediaQuery.of(context).size.width*.55,
+            height: MediaQuery.of(context).size.height*.25,
+            child: Card(
+              elevation: 6,
+              color: Colors.white,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SpinKitPouringHourGlass(color: Colors.blueGrey),
+                  const SizedBox(height: 10),
+                  const Text(
+                    'Loading user data...',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                      fontWeight: FontWeight.normal,
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -229,10 +224,12 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
                       completedTasks: completedTasksAssignedToMember,
                       dueTodayTasks: dueTodayTasksAssignedToMember,
                     )
-                    : LeaderDashboard(teamId: teamId!, tasks: allTasks, teamBudget: teamBudget, teamBudgetSpent: teamBudgetSpent, userMap: userMap,),
+                    : LeaderDashboard(teamId: teamId!, tasks: allTasks, teamBudget: teamBudget, teamBudgetSpent: teamBudgetSpent),
                   ChatsScreen(),
                   AIWindowScreen(),
-                  role == "member" ? ReportsMember() : ReportsLeader(),
+                  role == "member"
+                      ? ReportsMember()
+                      : ReportsLeader(userMap: userMap, tasks: allTasks, teamBudget: teamBudget, teamBudgetSpent: teamBudgetSpent,),
                   ProfileScreen(),
                 ]
               ),

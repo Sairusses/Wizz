@@ -181,7 +181,7 @@ class BudgetNewState extends State<BudgetNew> with AutomaticKeepAliveClientMixin
                 BudgetService().addExpense(
                     title: titleController.text.trim(),
                     description: descriptionController.text.trim(),
-                    amount: double.parse(amountController.text),
+                    budget: double.parse(amountController.text),
                     date: date,
                     teamId: widget.teamId
                 );

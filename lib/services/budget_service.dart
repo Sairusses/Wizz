@@ -41,7 +41,7 @@ class BudgetService {
 
       for (var expensesDoc in expenseSnapshot.docs){
         Map<String, dynamic> expenseData = expensesDoc.data() as Map<String, dynamic>;
-        var amountValue = expenseData['amount'];
+        var amountValue = expenseData['budget'];
         int amount = amountValue.toInt();
         totalSpent += amount;
       }
@@ -82,7 +82,7 @@ class BudgetService {
   Future<void> addExpense({
     required String title,
     required String description,
-    required double amount,
+    required double budget,
     required Timestamp date,
     required String teamId
   }) async {
@@ -95,7 +95,7 @@ class BudgetService {
       await expensesCollection.add({
         'title': title,
         'description': description,
-        'amount': amount,
+        'budget': budget,
         'date': date,
       });
     } catch (e) {

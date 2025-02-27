@@ -36,6 +36,7 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
   List<Map<String, dynamic>> inProgressTasksAssignedToMember = [];
   List<Map<String, dynamic>> completedTasksAssignedToMember = [];
   List<Map<String, dynamic>> dueTodayTasksAssignedToMember = [];
+  List<Map<String, dynamic>> budgetList = [];
   late Map<String, String> userMap;
   late int teamBudget;
   late int teamBudgetSpent;
@@ -114,6 +115,7 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
     BudgetService budgetService = BudgetService();
     int totalBudgetSpent = await budgetService.getTotalSpentBudget(teamId!);
     int totalBudget = await budgetService.getTeamBudget(teamId!);
+    _fetchTasksAndExpenses(teamId!);
     setState(() {
       teamBudgetSpent = totalBudgetSpent;
       teamBudget = totalBudget;
@@ -129,6 +131,52 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
     }
     return userMap;
   }
+
+  Future<void> _fetchTasksAndExpenses(String teamId) async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    CollectionReference tasksRef = firestore.collection('teams').doc(teamId).collection('tasks');
+    CollectionReference expensesRef = firestore.collection('teams').doc(teamId).collection('expenses');
+
+    try {
+      QuerySnapshot tasksSnapshot = await tasksRef.get();
+      List<Map<String, dynamic>> tasks = tasksSnapshot.docs.map((doc) {
+        return {
+          "title": doc["title"] ?? "No Title",
+          "budget": doc["budget"] ?? 0.0,
+        };
+      }).toList();
+
+      QuerySnapshot expensesSnapshot = await expensesRef.get();
+      List<Map<String, dynamic>> expenses = expensesSnapshot.docs.map((doc) {
+        return {
+          "title": doc["title"] ?? "No Title",
+          "budget": doc["budget"] ?? 0.0,
+        };
+      }).toList();
+
+      List<Map<String, dynamic>> combinedData = [...tasks, ...expenses];
+
+      List<Map<String, dynamic>> uniqueBudgetList = [];
+      Set<String> seenItems = Set();
+
+      for (var item in combinedData) {
+        String uniqueKey = "${item['title']}-${item['budget']}";
+        if (!seenItems.contains(uniqueKey)) {
+          seenItems.add(uniqueKey);
+          uniqueBudgetList.add(item);
+        }
+      }
+
+      setState(() {
+        budgetList = uniqueBudgetList;
+      });
+
+
+    } catch (e) {
+      print("Error fetching data: $e");
+    }
+  }
+
 
   void changePage(int newPage) {
     setState(() {
@@ -229,7 +277,7 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
                   AIWindowScreen(),
                   role == "member"
                       ? ReportsMember()
-                      : ReportsLeader(userMap: userMap, tasks: allTasks, teamBudget: teamBudget, teamBudgetSpent: teamBudgetSpent,),
+                      : ReportsLeader(userMap: userMap, tasks: allTasks, teamBudget: teamBudget, teamBudgetSpent: teamBudgetSpent, budgetList: budgetList,),
                   ProfileScreen(),
                 ]
               ),

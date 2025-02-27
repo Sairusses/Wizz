@@ -10,7 +10,8 @@ class ReportsLeader extends StatefulWidget {
   final Map<String, String> userMap;
   final int teamBudget;
   final int teamBudgetSpent;
-  const ReportsLeader({super.key, required this.tasks, required this.userMap, required this.teamBudget, required this.teamBudgetSpent});
+  final List<Map<String, dynamic>> budgetList;
+  const ReportsLeader({super.key, required this.tasks, required this.userMap, required this.teamBudget, required this.teamBudgetSpent, required this.budgetList});
 
   @override
   ReportsLeaderState createState() => ReportsLeaderState();
@@ -19,8 +20,13 @@ class ReportsLeader extends StatefulWidget {
 class ReportsLeaderState extends State<ReportsLeader> with AutomaticKeepAliveClientMixin{
   get tasks => widget.tasks;
   get userMap => widget.userMap;
+  get budgetList => widget.budgetList;
+  get teamBudget => widget.teamBudget;
+  get teamBudgetSpend => widget.teamBudgetSpent;
+
   @override
   bool get wantKeepAlive => true;
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -36,7 +42,11 @@ class ReportsLeaderState extends State<ReportsLeader> with AutomaticKeepAliveCli
             SizedBox(
               height: 160,
               child: TasksPrediction(tasks: tasks, userMap: userMap),
-            )
+            ),
+            SizedBox(height: 10,),
+            Text("Budget Forecast", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),),
+            BudgetForecast(teamBudget: teamBudget, teamBudgetSpent: teamBudgetSpend, budgetList: budgetList),
+
           ],
         ),
       ),
@@ -289,17 +299,22 @@ always add the <think> </think> tags when thinking so i can remove them for abst
 class BudgetForecast extends StatefulWidget{
   final int teamBudget;
   final int teamBudgetSpent;
-  const BudgetForecast({super.key, required this.teamBudget, required this.teamBudgetSpent});
+  final List<Map<String, dynamic>> budgetList;
+  const BudgetForecast({super.key, required this.teamBudget, required this.teamBudgetSpent, required this.budgetList});
 
   @override
   BudgetForecastState createState() => BudgetForecastState();
 }
 
 class BudgetForecastState extends State<BudgetForecast>{
+  get budgetList => widget.budgetList;
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-
+    budgetList.forEach((item) {
+      print("Title: ${item['title']}, Budget: ${item['budget']}");
+    });
+    return Center(
+      child: Text(budgetList),
     );
   }
 

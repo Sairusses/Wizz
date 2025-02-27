@@ -477,10 +477,8 @@ class NewTaskState extends State<NewTask>{
 
                         if (memberId == null) {
                           AuthService().showToast('User ID not found for member: $member');
-                          continue; // Skip this member if userId is not found
+                          continue;
                         }
-
-                        // Add task to the team
                         await addTaskToTeam(
                           assignedTo: memberId,
                           title: title,
@@ -493,8 +491,6 @@ class NewTaskState extends State<NewTask>{
 
                         AuthService().showToast('Successfully added task to: $member');
                       }
-
-                      // Close the dialog or navigate back
                       Navigator.pop(context);
                     } catch (e) {
                       AuthService().showToast('Error adding task: $e');

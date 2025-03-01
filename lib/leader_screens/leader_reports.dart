@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:groq/groq.dart';
@@ -22,7 +23,7 @@ class ReportsLeaderState extends State<ReportsLeader> with AutomaticKeepAliveCli
   get userMap => widget.userMap;
   get budgetList => widget.budgetList;
   get teamBudget => widget.teamBudget;
-  get teamBudgetSpend => widget.teamBudgetSpent;
+  get teamBudgetSpent => widget.teamBudgetSpent;
 
   @override
   bool get wantKeepAlive => true;
@@ -38,15 +39,14 @@ class ReportsLeaderState extends State<ReportsLeader> with AutomaticKeepAliveCli
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Tasks Prediction", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),),
-            SizedBox(
-              height: 160,
-              child: TasksPrediction(tasks: tasks, userMap: userMap),
-            ),
+            Text("AI Insights", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),),
+            TasksPrediction(tasks: tasks, userMap: userMap),
             SizedBox(height: 10,),
             Text("Budget Forecast", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),),
-            BudgetForecast(teamBudget: teamBudget, teamBudgetSpent: teamBudgetSpend, budgetList: budgetList),
-
+            SizedBox(height: 10,),
+            BudgetChart(teamBudget: teamBudget, budgetList: budgetList),
+            SizedBox(height: 10,),
+            BudgetForecast(budgetList: budgetList, teamBudget: teamBudget, teamBudgetSpent: teamBudgetSpent)
           ],
         ),
       ),
@@ -159,8 +159,8 @@ Add ONLY (emphasis on ONLY) the number followed by a colon (colon is VERY IMPORT
 4 : Trend & Pattern Recognition
 5 : AI-Driven Recommendations
 (Emphasis on this) )You can disregard a category if not applicable nor relevant. 
-(Emphasis on this) The predictions should always sorted by importance, not the number.
-Use only 5-15 words per prediction.
+(Emphasis on this) The predictions should always sort by importance, not the number.
+Use ONLY 5-10 words per prediction, you can concatenate to another task category.
 always add the <think> </think> tags when thinking so i can remove them for abstraction
 ''';
   late List<Map<String, dynamic>> predictions = [];
@@ -276,45 +276,217 @@ always add the <think> </think> tags when thinking so i can remove them for abst
   Widget build(BuildContext context) {
     return predictions.isEmpty
       ? SpinKitThreeInOut(color: Colors.blueGrey, size: 30,)
-      : ListView.builder(
-      itemExtent: 80,
-      shrinkWrap: true,
-      itemCount: predictions.length,
-      itemBuilder: (context, index) {
-        final prediction = predictions[index];
-        return Card(
-          color: Colors.white,
-          elevation: 2,
-          margin: EdgeInsets.all(4),
-          child: ListTile(
-            leading: Icon(getIcon(prediction["number"]), size: 30, color: Colors.black),
-            title: Text(prediction["message"], style: TextStyle(fontSize: 14, color: Colors.black)),
-          ),
-        );
-      },
+      : SizedBox(
+        height: 170,
+        child: ListView.builder(
+        shrinkWrap: true,
+        itemCount: predictions.length,
+        itemBuilder: (context, index) {
+          final prediction = predictions[index];
+          return Card(
+            color: Colors.white,
+            elevation: 2,
+            margin: EdgeInsets.all(4),
+            child: ListTile(
+              leading: Icon(getIcon(prediction["number"]), size: 30, color: Colors.black),
+              title: Text(prediction["message"], style: TextStyle(fontSize: 14, color: Colors.black)),
+            ),
+          );
+        },
+      ),
     );
   }
 }
 
+class BudgetChart extends StatefulWidget{
+  final int teamBudget;
+  final List<Map<String, dynamic>> budgetList;
+  const BudgetChart({super.key, required this.teamBudget,  required this.budgetList});
+
+  @override
+  BudgetChartState createState() => BudgetChartState();
+}
+
+class BudgetChartState extends State<BudgetChart>{
+  get budgetList => widget.budgetList;
+  get teamBudget => widget.teamBudget;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    DateFormat dateFormat = DateFormat('MM/dd/yyyy');
+
+    List<Map<String, dynamic>> sortedData = List.from(budgetList);
+    sortedData.sort((a, b) => dateFormat.parse(a['created_at']).compareTo(dateFormat.parse(b['created_at'])));
+
+    List<FlSpot> spots = sortedData.asMap().entries.map((entry) {
+      int index = entry.key;
+      double budget = (entry.value['budget'] as int).toDouble();
+      return FlSpot(index.toDouble(), budget);
+    }).toList();
+
+    return AspectRatio(
+      aspectRatio: 2.5,
+      child: LineChart(
+        LineChartData(
+          gridData: FlGridData(show: false),
+          titlesData: FlTitlesData(
+            leftTitles: AxisTitles(
+              sideTitles: SideTitles(
+                showTitles: true,
+                reservedSize: 40,
+                getTitlesWidget: (value, meta) {
+                  if (value % 100 == 0) {
+                    return Text(value.toInt().toString(), style: TextStyle(fontSize: 10));
+                  }
+                  return Container();
+                },
+              ),
+            ),
+            bottomTitles: AxisTitles(
+              sideTitles: SideTitles(
+                showTitles: true,
+                getTitlesWidget: (value, meta) {
+                  int index = value.toInt();
+                  if (index >= 0 && index < sortedData.length) {
+                    return Text(
+                      DateFormat('MM/dd').format(dateFormat.parse(sortedData[index]['created_at'])),
+                      style: TextStyle(fontSize: 10),
+                    );
+                  }
+                  return SizedBox();
+                },
+              ),
+            ),
+            topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          ),
+          borderData: FlBorderData(show: true),
+          lineBarsData: [
+            LineChartBarData(
+              preventCurveOverShooting: true,
+              spots: spots,
+              isCurved: true,
+              barWidth: 3,
+              color: Colors.blueAccent,
+              dotData: FlDotData(show: true),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+}
+
 class BudgetForecast extends StatefulWidget{
+  final List<Map<String, dynamic>> budgetList;
   final int teamBudget;
   final int teamBudgetSpent;
-  final List<Map<String, dynamic>> budgetList;
-  const BudgetForecast({super.key, required this.teamBudget, required this.teamBudgetSpent, required this.budgetList});
-
+  const BudgetForecast({super.key, required this.budgetList, required this.teamBudget, required this.teamBudgetSpent});
   @override
   BudgetForecastState createState() => BudgetForecastState();
 }
 
 class BudgetForecastState extends State<BudgetForecast>{
+  final _groq = Groq(
+    apiKey: "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",
+    model: "deepSeek-r1-distill-llama-70b",
+  );
+  final String instructions =
+  ''' 
+Objective:
+The AI Agent will analyze budget allocation and spending trends based on the provided data. It will generate insights in a concise paragraph (10-25 words).
+
+Response Format:
+
+Keep the response between 15-30 words.
+Provide a high-level insight into budget distribution, spending trends, or potential concerns.
+Example Insight:
+The budget is nearly exhausted, with large allocations for the project deadline and UI design. Future expenses should be carefully planned within the remaining budget.
+''';
+
   get budgetList => widget.budgetList;
+  get teamBudget => widget.teamBudget;
+  get teamBudgetSpent => widget.teamBudgetSpent;
+
+  late String formattedBudget;
+  String aiForecast = "Loading budget forecast...";
+
+  Future<void> _sendMessage() async {
+    GroqResponse response = await _groq.sendMessage(formattedBudget);
+    String responseMessage = response.choices.first.message.content;
+    int retries = 0;
+    if(retries > 3){
+      aiForecast = "Failed fetching AI Budget Forecast,";
+      return;
+    }
+    if(!responseMessage.contains(r"</think>") && !responseMessage.contains(r"</think>") && !responseMessage.contains(":")){
+      _sendMessage();
+      retries += 1;
+    }
+    else{
+      setState(() {
+        aiForecast = removeThinkTags(responseMessage);
+        aiForecast.trimLeft();
+      });
+    }
+  }
+
+  String formatBudget(List<Map<String, dynamic>> budgetList, int teamBudget, int teamBudgetSpent){
+    int remainingBudget = teamBudget - teamBudgetSpent;
+
+    String jsonString = jsonEncode(budgetList);
+    String formattedString = jsonString
+        .replaceAll('{', '{\n  ')
+        .replaceAll('}', '\n}')
+        .replaceAll('[', '[\n')
+        .replaceAll(']', '\n]')
+        .replaceAll(',', ',\n  ');
+
+    String returnString = '''
+total budget: $teamBudget
+spent budget: $teamBudgetSpent
+remaining budget: $remainingBudget
+    
+budget data:
+$formattedString
+    ''';
+
+    return returnString;
+  }
+
+  String removeThinkTags(String input) {
+    final regex = RegExp(r'<think>.*?<\/think>', dotAll: true);
+    final String removedThinkTags = input.replaceAll(regex, '');
+    return removedThinkTags;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    formattedBudget = formatBudget(budgetList, teamBudget, teamBudgetSpent);
+    _groq.startChat();
+    _groq.setCustomInstructionsWith(instructions);
+    _sendMessage();
+  }
   @override
   Widget build(BuildContext context) {
-    budgetList.forEach((item) {
-      print("Title: ${item['title']}, Budget: ${item['budget']}");
-    });
-    return Center(
-      child: Text(budgetList),
+
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 20),
+      child: Text(
+        '      ${aiForecast.trimLeft()}',
+        style: TextStyle(
+          fontSize: 16,
+          color: Colors.black,
+          fontWeight: FontWeight.w400
+        ),
+      ),
     );
   }
 

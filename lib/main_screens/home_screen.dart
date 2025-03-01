@@ -4,6 +4,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_floating_bottom_bar/flutter_floating_bottom_bar.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:intl/intl.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:wizz/leader_screens/leader_dashboard.dart';
 import 'package:wizz/leader_screens/leader_reports.dart';
@@ -142,7 +143,9 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
       List<Map<String, dynamic>> tasks = tasksSnapshot.docs.map((doc) {
         return {
           "title": doc["title"] ?? "No Title",
+          "description": doc["description"] ?? "No description",
           "budget": doc["budget"] ?? 0.0,
+          "created_at": _formatTimestamp(doc["created_at"])
         };
       }).toList();
 
@@ -150,17 +153,19 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
       List<Map<String, dynamic>> expenses = expensesSnapshot.docs.map((doc) {
         return {
           "title": doc["title"] ?? "No Title",
+          "description": doc["description"] ?? "No description",
           "budget": doc["budget"] ?? 0.0,
+          "created_at": _formatTimestamp(doc["date"])
         };
       }).toList();
 
       List<Map<String, dynamic>> combinedData = [...tasks, ...expenses];
 
       List<Map<String, dynamic>> uniqueBudgetList = [];
-      Set<String> seenItems = Set();
+      Set<String> seenItems = {};
 
       for (var item in combinedData) {
-        String uniqueKey = "${item['title']}-${item['budget']}";
+        String uniqueKey = "${item['title']}";
         if (!seenItems.contains(uniqueKey)) {
           seenItems.add(uniqueKey);
           uniqueBudgetList.add(item);
@@ -175,6 +180,14 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
     } catch (e) {
       print("Error fetching data: $e");
     }
+  }
+
+  String _formatTimestamp(dynamic timestamp) {
+    if (timestamp is Timestamp) {
+      DateTime dateTime = timestamp.toDate();
+      return DateFormat('MM/dd/yyyy').format(dateTime);
+    }
+    return "Unknown Date";
   }
 
 

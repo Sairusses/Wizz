@@ -286,7 +286,7 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
                       dueTodayTasks: dueTodayTasksAssignedToMember,
                     )
                     : LeaderDashboard(teamId: teamId!, tasks: allTasks, teamBudget: teamBudget, teamBudgetSpent: teamBudgetSpent),
-                  ChatsScreen(),
+                  ChatsScreen(teamId: teamId!),
                   AIWindowScreen(),
                   role == "member"
                       ? ReportsMember()

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:wizz/services/auth_service.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -20,7 +21,12 @@ class ProfileScreenState extends State<ProfileScreen> with AutomaticKeepAliveCli
     super.build(context);
     return Scaffold(
       body: Center(
-          child: Text('Profile Screen')
+          child: ElevatedButton(
+            onPressed: (){
+              AuthService().logout(context);
+            },
+            child: Text("Log Out")
+          )
       ),
     );
   }

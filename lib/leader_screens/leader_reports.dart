@@ -44,9 +44,20 @@ class ReportsLeaderState extends State<ReportsLeader> with AutomaticKeepAliveCli
             SizedBox(height: 10,),
             Text("Budget Forecast", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),),
             SizedBox(height: 10,),
-            BudgetChart(teamBudget: teamBudget, budgetList: budgetList),
-            SizedBox(height: 10,),
-            BudgetForecast(budgetList: budgetList, teamBudget: teamBudget, teamBudgetSpent: teamBudgetSpent)
+            Card(
+              color: Colors.white,
+              elevation: 4,
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  children: [
+                    BudgetChart(teamBudget: teamBudget, budgetList: budgetList),
+                    SizedBox(height: 10,),
+                    BudgetForecast(budgetList: budgetList, teamBudget: teamBudget, teamBudgetSpent: teamBudgetSpent)
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -477,15 +488,12 @@ $formattedString
   @override
   Widget build(BuildContext context) {
 
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20),
-      child: Text(
-        '      ${aiForecast.trimLeft()}',
-        style: TextStyle(
-          fontSize: 16,
-          color: Colors.black,
-          fontWeight: FontWeight.w400
-        ),
+    return Text(
+      '      ${aiForecast.trimLeft()}',
+      style: TextStyle(
+        fontSize: 16,
+        color: Colors.black,
+        fontWeight: FontWeight.w400
       ),
     );
   }

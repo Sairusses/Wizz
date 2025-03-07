@@ -97,7 +97,7 @@ class ProfileScreenState extends State<ProfileScreen> with AutomaticKeepAliveCli
         const SizedBox(height: 5),
         Chip(
           label: Text(role),
-          backgroundColor: role == "Leader" ? Colors.blueAccent : Colors.greenAccent,
+          backgroundColor: Colors.blueAccent,
           labelStyle: const TextStyle(color: Colors.white),
         ),
       ],

@@ -221,7 +221,7 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const SpinKitPouringHourGlass(color: Colors.blueGrey),
+                  const SpinKitPouringHourGlass(color: Colors.blueAccent),
                   const SizedBox(height: 10),
                   const Text(
                     'Loading user data...',
@@ -287,7 +287,7 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
                     )
                     : LeaderDashboard(teamId: teamId!, tasks: allTasks, teamBudget: teamBudget, teamBudgetSpent: teamBudgetSpent),
                   ChatsScreen(teamId: teamId!),
-                  AIWindowScreen(),
+                  AIWindowScreen(allTasks: allTasks, budgetList: budgetList, teamBudget: teamBudget, teamBudgetSpent: teamBudgetSpent, userMap: userMap,),
                   role == "member"
                       ? ReportsMember()
                       : ReportsLeader(userMap: userMap, tasks: allTasks, teamBudget: teamBudget, teamBudgetSpent: teamBudgetSpent, budgetList: budgetList,),
@@ -304,7 +304,7 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
                     controller: tabController,
                     indicator: UnderlineTabIndicator(
                       borderSide: BorderSide(
-                        color: Colors.blueGrey,
+                        color: Colors.blueAccent,
                         width: 4,
                       ),
                       insets: EdgeInsets.fromLTRB(16, 0, 16, 8)
@@ -316,7 +316,7 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
                         child: Center(
                           child: Icon(
                             Icons.home,
-                            color: currentPage == 0 ? Colors.blueGrey : Colors.white,
+                            color: currentPage == 0 ? Colors.blueAccent : Colors.white,
                           )),
                       ),
                       SizedBox(
@@ -325,7 +325,7 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
                         child: Center(
                           child: Icon(
                             Icons.chat,
-                            color: currentPage == 1 ? Colors.blueGrey : Colors.white,
+                            color: currentPage == 1 ? Colors.blueAccent : Colors.white,
                           ),
                         ),
                       ),
@@ -335,7 +335,7 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
                         child: Center(
                           child: Icon(
                             Symbols.robot_2,
-                            color: currentPage == 2 ? Colors.blueGrey : Colors.white,
+                            color: currentPage == 2 ? Colors.blueAccent : Colors.white,
                           ),
                         ),
                       ),
@@ -345,7 +345,7 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
                         child: Center(
                           child: Icon(
                             Symbols.graph_3,
-                            color: currentPage == 3 ? Colors.blueGrey : Colors.white,
+                            color: currentPage == 3 ? Colors.blueAccent : Colors.white,
                           ),
                         ),
                       ),
@@ -355,7 +355,7 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
                         child: Center(
                           child: Icon(
                             Icons.person,
-                            color: currentPage == 4 ? Colors.blueGrey : Colors.white,
+                            color: currentPage == 4 ? Colors.blueAccent : Colors.white,
                           ),
                         ),
                       ),

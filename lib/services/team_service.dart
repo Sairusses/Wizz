@@ -88,6 +88,7 @@ class TeamService {
       return null;
     }
   }
+
   Future<String?> getUserRole() async {
     try {
       User? user = FirebaseAuth.instance.currentUser;

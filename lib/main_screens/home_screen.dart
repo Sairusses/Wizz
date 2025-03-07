@@ -178,7 +178,7 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
 
 
     } catch (e) {
-      print("Error fetching data: $e");
+      null;
     }
   }
 
@@ -285,13 +285,30 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
                       completedTasks: completedTasksAssignedToMember,
                       dueTodayTasks: dueTodayTasksAssignedToMember,
                     )
-                    : LeaderDashboard(teamId: teamId!, tasks: allTasks, teamBudget: teamBudget, teamBudgetSpent: teamBudgetSpent),
+                    : LeaderDashboard(
+                      teamId: teamId!,
+                      tasks: allTasks,
+                      teamBudget: teamBudget,
+                      teamBudgetSpent: teamBudgetSpent
+                  ),
                   ChatsScreen(teamId: teamId!),
-                  AIWindowScreen(allTasks: allTasks, budgetList: budgetList, teamBudget: teamBudget, teamBudgetSpent: teamBudgetSpent, userMap: userMap,),
+                  AIWindowScreen(
+                    allTasks: allTasks,
+                    budgetList: budgetList,
+                    teamBudget: teamBudget,
+                    teamBudgetSpent: teamBudgetSpent,
+                    userMap: userMap,
+                  ),
                   role == "member"
                       ? ReportsMember()
-                      : ReportsLeader(userMap: userMap, tasks: allTasks, teamBudget: teamBudget, teamBudgetSpent: teamBudgetSpent, budgetList: budgetList,),
-                  ProfileScreen(),
+                      : ReportsLeader(
+                    userMap: userMap,
+                    tasks: allTasks,
+                    teamBudget: teamBudget,
+                    teamBudgetSpent: teamBudgetSpent,
+                    budgetList: budgetList,
+                  ),
+                  ProfileScreen(uid: userId!, teamId: teamId!, role: role!,),
                 ]
               ),
               child: Stack(

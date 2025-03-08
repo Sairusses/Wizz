@@ -39,7 +39,7 @@ class MemberDashboardState extends State<MemberDashboard> with SingleTickerProvi
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
-      backgroundColor: Color(0xf3f3f3f3),
+      backgroundColor: Colors.grey[50],
       appBar: _AppBar(),
       body: _TasksTabView(
         teamId: widget.teamId,
@@ -221,7 +221,7 @@ class _TasksTabView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: Colors.grey[50],
       body: NestedScrollView(
         controller: scrollController,
         physics: const ClampingScrollPhysics(),
@@ -230,10 +230,10 @@ class _TasksTabView extends StatelessWidget {
             pinned: true,
             floating: true,
             scrolledUnderElevation: 0,
-            backgroundColor: Colors.grey[200],
+            backgroundColor: Colors.grey[50],
             title: Container(
               decoration: BoxDecoration(
-                color: Colors.grey[300],
+                color: Colors.grey[200],
                 borderRadius: BorderRadius.circular(25.0),
               ),
               child: TabBar(

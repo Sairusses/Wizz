@@ -300,7 +300,7 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
                     userMap: userMap,
                   ),
                   role == "member"
-                      ? ReportsMember()
+                      ? ReportsMember(tasks: allTasksAssignedToMember, userMap: userMap,)
                       : ReportsLeader(
                     userMap: userMap,
                     tasks: allTasks,

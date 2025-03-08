@@ -234,7 +234,7 @@ always add the <think> </think> tags when thinking so i can remove them for abst
   }
 
   String removeThinkTags(String input) {
-    final regex = RegExp(r'<think>.*?<\/think>', dotAll: true);
+    final regex = RegExp(r'<think>.*?</think>', dotAll: true);
     final String removedThinkTags = input.replaceAll(regex, '');
     return removedThinkTags;
   }
@@ -472,7 +472,7 @@ $formattedString
   }
 
   String removeThinkTags(String input) {
-    final regex = RegExp(r'<think>.*?<\/think>', dotAll: true);
+    final regex = RegExp(r'<think>.*?</think>', dotAll: true);
     final String removedThinkTags = input.replaceAll(regex, '');
     return removedThinkTags;
   }

@@ -35,7 +35,7 @@ class BudgetNewState extends State<BudgetNew> with AutomaticKeepAliveClientMixin
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),
-      backgroundColor: Colors.grey[100],
+      backgroundColor: Colors.white,
       elevation: 10,
       child: Padding(
         padding: const EdgeInsets.all(20.0),

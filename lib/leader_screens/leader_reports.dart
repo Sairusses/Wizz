@@ -47,15 +47,12 @@ class ReportsLeaderState extends State<ReportsLeader> with AutomaticKeepAliveCli
             Card(
               color: Colors.white,
               elevation: 4,
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Column(
-                  children: [
-                    BudgetChart(teamBudget: teamBudget, budgetList: budgetList),
-                    SizedBox(height: 10,),
-                    BudgetForecast(budgetList: budgetList, teamBudget: teamBudget, teamBudgetSpent: teamBudgetSpent)
-                  ],
-                ),
+              child: Column(
+                children: [
+                  BudgetChart(teamBudget: teamBudget, budgetList: budgetList),
+                  SizedBox(height: 10,),
+                  BudgetForecast(budgetList: budgetList, teamBudget: teamBudget, teamBudgetSpent: teamBudgetSpent)
+                ],
               ),
             ),
           ],
@@ -340,53 +337,57 @@ class BudgetChartState extends State<BudgetChart>{
       return FlSpot(index.toDouble(), budget);
     }).toList();
 
-    return AspectRatio(
-      aspectRatio: 2.5,
-      child: LineChart(
-        LineChartData(
-          gridData: FlGridData(show: false),
-          titlesData: FlTitlesData(
-            leftTitles: AxisTitles(
-              sideTitles: SideTitles(
-                showTitles: true,
-                reservedSize: 40,
-                getTitlesWidget: (value, meta) {
-                  if (value % 100 == 0) {
-                    return Text(value.toInt().toString(), style: TextStyle(fontSize: 10));
-                  }
-                  return Container();
-                },
+    return SizedBox(
+      width: MediaQuery.of(context).size.width * .9,
+      height: MediaQuery.of(context).size.height * .25,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+        child: LineChart(
+          LineChartData(
+            gridData: FlGridData(show: false),
+            titlesData: FlTitlesData(
+              leftTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: true,
+                  reservedSize: 40,
+                  getTitlesWidget: (value, meta) {
+                    if (value % 100 == 0) {
+                      return Text(value.toInt().toString(), style: TextStyle(fontSize: 10));
+                    }
+                    return Container();
+                  },
+                ),
               ),
-            ),
-            bottomTitles: AxisTitles(
-              sideTitles: SideTitles(
-                showTitles: true,
-                getTitlesWidget: (value, meta) {
-                  int index = value.toInt();
-                  if (index >= 0 && index < sortedData.length) {
-                    return Text(
-                      DateFormat('MM/dd').format(dateFormat.parse(sortedData[index]['created_at'])),
-                      style: TextStyle(fontSize: 10),
-                    );
-                  }
-                  return SizedBox();
-                },
+              bottomTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: true,
+                  getTitlesWidget: (value, meta) {
+                    int index = value.toInt();
+                    if (index >= 0 && index < sortedData.length) {
+                      return Text(
+                        DateFormat('MM/dd').format(dateFormat.parse(sortedData[index]['created_at'])),
+                        style: TextStyle(fontSize: 10),
+                      );
+                    }
+                    return SizedBox();
+                  },
+                ),
               ),
+              topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
             ),
-            topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            borderData: FlBorderData(show: true),
+            lineBarsData: [
+              LineChartBarData(
+                preventCurveOverShooting: true,
+                spots: spots,
+                isCurved: true,
+                barWidth: 3,
+                color: Colors.blueAccent,
+                dotData: FlDotData(show: true),
+              )
+            ],
           ),
-          borderData: FlBorderData(show: true),
-          lineBarsData: [
-            LineChartBarData(
-              preventCurveOverShooting: true,
-              spots: spots,
-              isCurved: true,
-              barWidth: 3,
-              color: Colors.blueAccent,
-              dotData: FlDotData(show: true),
-            )
-          ],
         ),
       ),
     );
@@ -488,12 +489,15 @@ $formattedString
   @override
   Widget build(BuildContext context) {
 
-    return Text(
-      '      ${aiForecast.trimLeft()}',
-      style: TextStyle(
-        fontSize: 16,
-        color: Colors.black,
-        fontWeight: FontWeight.w400
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Text(
+        '      ${aiForecast.trimLeft()}',
+        style: TextStyle(
+          fontSize: 16,
+          color: Colors.black,
+          fontWeight: FontWeight.w400
+        ),
       ),
     );
   }

@@ -97,7 +97,7 @@ class ProfileScreenState extends State<ProfileScreen> with AutomaticKeepAliveCli
         const SizedBox(height: 5),
         Chip(
           label: Text(role),
-          backgroundColor: Colors.blueAccent,
+          backgroundColor: Colors.black,
           labelStyle: const TextStyle(color: Colors.white),
         ),
       ],
@@ -123,9 +123,9 @@ class ProfileScreenState extends State<ProfileScreen> with AutomaticKeepAliveCli
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       color: Colors.white,
       child: ListTile(
-        leading: Icon(icon, color: Colors.blueAccent),
+        leading: Icon(icon, color: Colors.black),
         title: Text(title),
-        trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+        trailing: Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey[800]),
         onTap: onTap,
       ),
     );

@@ -37,79 +37,80 @@ class BudgetNewState extends State<BudgetNew> with AutomaticKeepAliveClientMixin
       ),
       backgroundColor: Colors.white,
       elevation: 10,
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Record Expense', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),),
-                IconButton(
-                    onPressed: (){
-                      Navigator.pop(context);
-                      },
-                    icon: Icon(Icons.close, size: 18, color: Colors.black,)
-                )
-              ],
-            ),
-            Card(
-              elevation: 3,
-              color: Colors.white,
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('Your Budget:', style:
-                        TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.normal),),
-                        Text("\$ " '$teamBudget', style:
-                        TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold),),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('Remaining:', style:
-                        TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.normal),),
-                        Text("\$ " '$remainingBudget', style:
-                        TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold),),
-                      ],
-                    ),
-                  ],
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Record Expense', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),),
+                  IconButton(
+                      onPressed: (){
+                        Navigator.pop(context);
+                        },
+                      icon: Icon(Icons.close, size: 18, color: Colors.black,)
+                  )
+                ],
+              ),
+              Card(
+                elevation: 3,
+                color: Colors.white,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Your Budget:', style:
+                          TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.normal),),
+                          Text("\$ " '$teamBudget', style:
+                          TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold),),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Remaining:', style:
+                          TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.normal),),
+                          Text("\$ " '$remainingBudget', style:
+                          TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold),),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            SizedBox(height: 20,),
-            CustomTextFormField(
-              controller: titleController,
-              labelText: 'Title',
-              hint: 'Expense title',
-            ),
-            SizedBox(height: 20,),
-            CustomTextFormField(
-              controller: amountController,
-              labelText: 'Amount',
-              textInputType: TextInputType.number,
-              hint: '0',
-              prefixIcon: Icon(Icons.attach_money),
-            ),
-            SizedBox(height:  20,),
-            CustomTextFormField(
-                controller: descriptionController,
-                labelText: "Description",
-                hint: "Add note about this expense.",
-                maxLines: 4,
-            ),
-            SizedBox(height:  20,),
-            SizedBox(
-              height: 40,
-              width: MediaQuery.of(context).size.width*.5,
-              child: Expanded(
+              SizedBox(height: 20,),
+              CustomTextFormField(
+                controller: titleController,
+                labelText: 'Title',
+                hint: 'Expense title',
+              ),
+              SizedBox(height: 20,),
+              CustomTextFormField(
+                controller: amountController,
+                labelText: 'Amount',
+                textInputType: TextInputType.number,
+                hint: '0',
+                prefixIcon: Icon(Icons.attach_money),
+              ),
+              SizedBox(height:  20,),
+              CustomTextFormField(
+                  controller: descriptionController,
+                  labelText: "Description",
+                  hint: "Add note about this expense.",
+                  maxLines: 4,
+              ),
+              SizedBox(height:  20,),
+              SizedBox(
+                height: 40,
+                width: MediaQuery.of(context).size.width*.5,
                 child: ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
@@ -174,34 +175,34 @@ class BudgetNewState extends State<BudgetNew> with AutomaticKeepAliveClientMixin
                   ),
                 ),
               ),
-            ),
-            SizedBox(height: 20,),
-            ElevatedButton(
-              onPressed: () {
-                BudgetService().addExpense(
-                    title: titleController.text.trim(),
-                    description: descriptionController.text.trim(),
-                    budget: double.parse(amountController.text),
-                    date: date,
-                    teamId: widget.teamId
-                );
-                AuthService().showToast('Expense added');
-                Navigator.pop(context);
-              },
-              style: ButtonStyle(
-                backgroundColor: WidgetStatePropertyAll(Colors.black87),
-                foregroundColor: WidgetStatePropertyAll(Colors.white),
-                elevation: WidgetStatePropertyAll(6),
-                fixedSize: WidgetStatePropertyAll(Size(MediaQuery.of(context).size.width*.5, 40)),
-                shape: WidgetStatePropertyAll(RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(6),
-                  )
+              SizedBox(height: 20,),
+              ElevatedButton(
+                onPressed: () {
+                  BudgetService().addExpense(
+                      title: titleController.text.trim(),
+                      description: descriptionController.text.trim(),
+                      budget: double.parse(amountController.text),
+                      date: date,
+                      teamId: widget.teamId
+                  );
+                  AuthService().showToast('Expense added');
+                  Navigator.pop(context);
+                },
+                style: ButtonStyle(
+                  backgroundColor: WidgetStatePropertyAll(Colors.black87),
+                  foregroundColor: WidgetStatePropertyAll(Colors.white),
+                  elevation: WidgetStatePropertyAll(6),
+                  fixedSize: WidgetStatePropertyAll(Size(MediaQuery.of(context).size.width*.5, 40)),
+                  shape: WidgetStatePropertyAll(RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(6),
+                    )
+                  ),
                 ),
-              ),
-              child: Text("Save Expense"),
-            )
+                child: Text("Save Expense"),
+              )
 
-          ],
+            ],
+          ),
         ),
       ),
     );

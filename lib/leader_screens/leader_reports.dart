@@ -36,26 +36,20 @@ class ReportsLeaderState extends State<ReportsLeader> with AutomaticKeepAliveCli
       appBar: _AppBar(),
       body: Padding(
         padding: EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text("AI Insights", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),),
-            TasksPrediction(tasks: tasks, userMap: userMap),
-            SizedBox(height: 10,),
-            Text("Budget Forecast", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),),
-            SizedBox(height: 10,),
-            Card(
-              color: Colors.white,
-              elevation: 4,
-              child: Column(
-                children: [
-                  BudgetChart(teamBudget: teamBudget, budgetList: budgetList),
-                  SizedBox(height: 10,),
-                  BudgetForecast(budgetList: budgetList, teamBudget: teamBudget, teamBudgetSpent: teamBudgetSpent)
-                ],
-              ),
-            ),
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("AI Insights", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),),
+              TasksPrediction(tasks: tasks, userMap: userMap),
+              SizedBox(height: 10,),
+              Text("Budget Forecast", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),),
+              SizedBox(height: 10,),
+              BudgetChart(teamBudget: teamBudget, budgetList: budgetList),
+              SizedBox(height: 10,),
+              BudgetForecast(budgetList: budgetList, teamBudget: teamBudget, teamBudgetSpent: teamBudgetSpent),
+            ],
+          ),
         ),
       ),
     );
@@ -333,8 +327,8 @@ class BudgetChartState extends State<BudgetChart>{
 
     List<FlSpot> spots = sortedData.asMap().entries.map((entry) {
       int index = entry.key;
-      double budget = (entry.value['budget'] as int).toDouble();
-      return FlSpot(index.toDouble(), budget);
+      num budget = entry.value['budget'];
+      return FlSpot(index.toDouble(), budget.toDouble());
     }).toList();
 
     return SizedBox(
@@ -450,7 +444,7 @@ The budget is nearly exhausted, with large allocations for the project deadline 
   }
 
   String formatBudget(List<Map<String, dynamic>> budgetList, int teamBudget, int teamBudgetSpent){
-    int remainingBudget = teamBudget - teamBudgetSpent;
+    int remainingBudget = (teamBudget - teamBudgetSpent).toInt();
 
     String jsonString = jsonEncode(budgetList);
     String formattedString = jsonString

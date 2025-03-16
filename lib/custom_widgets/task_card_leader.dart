@@ -5,14 +5,39 @@ import 'package:intl/intl.dart';
 class TasksCardLeader extends StatelessWidget {
   final double height;
   final List<Map<String, dynamic>> tasks;
+  final String teamId;
 
-  const TasksCardLeader({super.key, required this.tasks, required this.height});
+  const TasksCardLeader({
+    super.key,
+    required this.tasks,
+    required this.height,
+    required this.teamId,
+  });
 
   String formatDueDate(dynamic dueDate) {
     if (dueDate is Timestamp) {
       return DateFormat('MMM d, yyyy').format(dueDate.toDate());
     }
     return dueDate?.toString() ?? "No Date";
+  }
+
+  Future<void> _deleteTask(BuildContext context, String taskId) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('teams')
+          .doc(teamId)
+          .collection('tasks')
+          .doc(taskId)
+          .delete();
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Task deleted successfully')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to delete task: $e')),
+      );
+    }
   }
 
   @override
@@ -33,7 +58,7 @@ class TasksCardLeader extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Task Title
+                  // Task Title Row with Delete Button
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -44,21 +69,36 @@ class TasksCardLeader extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      // Priority Label
-                      Container(
-                        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-                        decoration: BoxDecoration(
-                          color: Colors.grey[350],
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          task['priority'],
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 12,
-                            fontWeight: FontWeight.normal,
+                      Row(
+                        children: [
+                          // Priority Label
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 4, horizontal: 8),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[350],
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              task['priority'],
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 12,
+                                fontWeight: FontWeight.normal,
+                              ),
+                            ),
                           ),
-                        ),
+                          const SizedBox(width: 8),
+                          // Delete Button
+                          IconButton(
+                            icon: const Icon(Icons.delete,
+                                color: Colors.black),
+                            onPressed: () => _showDeleteDialog(
+                              context,
+                              task['id'],
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -69,7 +109,7 @@ class TasksCardLeader extends StatelessWidget {
                     child: LinearProgressIndicator(
                       value: task['progress'] / 100, // Assuming 0-100
                       backgroundColor: Colors.grey[300],
-                      valueColor: AlwaysStoppedAnimation<Color>(
+                      valueColor: const AlwaysStoppedAnimation<Color>(
                         Colors.black54,
                       ),
                       minHeight: 6,
@@ -96,6 +136,36 @@ class TasksCardLeader extends StatelessWidget {
           style: TextStyle(fontSize: 16, color: Colors.black87),
         ),
       ),
+    );
+  }
+
+  // Show confirmation dialog before deleting
+  void _showDeleteDialog(BuildContext context, String taskId) {
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          title: const Text('Delete Task'),
+          content: const Text('Are you sure you want to delete this task?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+                _deleteTask(context, taskId);
+              },
+              child: const Text(
+                'Delete',
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

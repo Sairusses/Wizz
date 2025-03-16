@@ -69,7 +69,7 @@ class LeaderDashboardState extends State<LeaderDashboard> with AutomaticKeepAliv
               children: [
                 TasksTitle(teamId: widget.teamId, tasks: tasks),
                 SizedBox(height: 8),
-                TasksCardLeader(tasks: tasks, height: MediaQuery.of(context).size.height * .25),
+                TasksCardLeader(tasks: tasks, height: MediaQuery.of(context).size.height * .25, teamId: widget.teamId,),
                 SizedBox(height: 16),
                 BudgetTitle(teamBudget: teamBudget, teamBudgetSpent: teamBudgetSpent, teamId: teamId,),
                 SizedBox(height: 8),

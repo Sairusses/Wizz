@@ -31,7 +31,7 @@ class LeaderTasksGalleryState extends State<LeaderTasksGallery> {
           children: [
             TasksTitle(teamId: widget.teamId,),
             SizedBox(height: 8,),
-            TasksCardLeader(tasks: widget.tasks, height: MediaQuery.of(context).size.height * 0.75),
+            TasksCardLeader(tasks: widget.tasks, height: MediaQuery.of(context).size.height * 0.75, teamId: widget.teamId,),
           ],
         ),
       ),

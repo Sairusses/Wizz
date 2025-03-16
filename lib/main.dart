@@ -15,34 +15,38 @@ Future<void> main() async {
   FirebaseFirestore.instance.settings = const Settings(
     persistenceEnabled: true
   );
-
-  // runApp(
-  //   DevicePreview(
-  //       enabled: !kReleaseMode,
-  //       builder: (context) => Home()
-  //   ),
-  // );
-
-  runApp(Home());
+  bool isRelease = false;
+  // ignore: dead_code
+  if(isRelease){
+    runApp(Home());
+  // ignore: dead_code
+  }else{
+    runApp(
+      DevicePreview(
+          enabled: !isRelease,
+          builder: (context) => Home2()
+      ),
+    );
+  }
 
 }
-//
-// class Home extends StatelessWidget {
-//   const Home({super.key});
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     String? uid = FirebaseAuth.instance.currentUser?.uid;
-//     return MaterialApp(
-//       debugShowCheckedModeBanner: false,
-//       locale: DevicePreview.locale(context),
-//       builder: DevicePreview.appBuilder,
-//       theme: ThemeData.light(),
-//       darkTheme: ThemeData.light(),
-//       home: uid == null ? LoginScreen() : HomeScreen(),
-//     );
-//   }
-// }
+
+class Home2 extends StatelessWidget {
+  const Home2({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    String? uid = FirebaseAuth.instance.currentUser?.uid;
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      locale: DevicePreview.locale(context),
+      builder: DevicePreview.appBuilder,
+      theme: ThemeData.light(),
+      darkTheme: ThemeData.light(),
+      home: uid == null ? LoginScreen() : HomeScreen(),
+    );
+  }
+}
 
 
 class Home extends StatelessWidget {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wizz/custom_widgets/task_card_leader.dart';
+import 'package:wizz/leader_screens/budget_list.dart';
 import 'package:wizz/leader_screens/budget_new.dart';
 import 'package:wizz/leader_screens/leader_tasks_gallery.dart';
 import 'package:wizz/services/budget_service.dart';
@@ -104,17 +105,6 @@ class _AppBar extends StatelessWidget implements PreferredSizeWidget{
             fontSize: 20
         ),
       ),
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.notifications, color: Colors.black),
-          onPressed: () {},
-        ),
-        const CircleAvatar(
-          backgroundColor: Colors.black12,
-          child: Icon(Icons.person, color: Colors.black),
-        ),
-        const SizedBox(width: 15),
-      ],
     );
   }
 
@@ -232,10 +222,10 @@ class BudgetTitle extends StatelessWidget{
             children: [
               IconButton(
                 onPressed: () {
-                  // Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(builder: (context) => budgetpage,
-                  // );
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => BudgetListScreen(teamId: teamId, teamBudget: teamBudget, teamBudgetSpent: teamBudgetSpent,)),
+                  );
                 },
                 icon: Icon(Icons.more_horiz, color: Colors.black),
               ),

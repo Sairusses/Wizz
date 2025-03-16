@@ -34,10 +34,11 @@ class ChatsScreenState extends State<ChatsScreen> with AutomaticKeepAliveClientM
               var member = doc.data() as Map<String, dynamic>;
               return ListTile(
                 leading: CircleAvatar(
+                  backgroundColor: Colors.blueAccent,
                   backgroundImage: member['profilePic'] != null
                       ? NetworkImage(member['profilePic'])
                       : null,
-                  child: member['profilePic'] == null ? const Icon(Icons.person) : null,
+                  child: member['profilePic'] == null ? const Icon(Icons.person, color: Colors.white,) : null,
                 ),
                 title: Text(member['username'] ?? "Unknown"),
                 onTap: () {

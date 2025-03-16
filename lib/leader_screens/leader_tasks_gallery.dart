@@ -23,7 +23,7 @@ class LeaderTasksGalleryState extends State<LeaderTasksGallery> {
     return Scaffold(
       appBar: _AppBar(),
       body: Container(
-        color: Colors.grey[200],
+        color: Colors.grey[50],
         padding: EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

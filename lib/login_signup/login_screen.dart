@@ -22,7 +22,7 @@ class LoginScreenState extends StatelessWidget{
     passwordController.text = 'leader1@leader1.com';
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: Colors.grey[200],
+      backgroundColor: Colors.grey[50],
       body: SingleChildScrollView(
         child: Padding(
             padding: EdgeInsets.all(20),

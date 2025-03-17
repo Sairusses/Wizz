@@ -196,7 +196,7 @@ class CreateTeam extends StatelessWidget{
               context: context,
               barrierDismissible: false,
               builder: (context) {
-                return const Center(child: CircularProgressIndicator(color: Colors.blueGrey,));
+                return const Center(child: CircularProgressIndicator(color: Colors.blueAccent,));
               },
             );
 

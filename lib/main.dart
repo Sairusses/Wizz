@@ -6,29 +6,28 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:wizz/main_screens/home_screen.dart';
 import 'firebase_options.dart';
 import 'login_signup/login_screen.dart';
+import 'package:flutter/foundation.dart';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform
   );
   FirebaseFirestore.instance.settings = const Settings(
     persistenceEnabled: true
   );
-  bool isRelease = false;
   // ignore: dead_code
-  if(isRelease){
+  if(kReleaseMode){
     runApp(Home());
   // ignore: dead_code
   }else{
     runApp(
       DevicePreview(
-          enabled: !isRelease,
+          enabled: !kReleaseMode,
           builder: (context) => Home2()
       ),
     );
   }
-
 }
 
 class Home2 extends StatelessWidget {

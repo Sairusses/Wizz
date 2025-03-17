@@ -277,7 +277,7 @@ always add the <think> </think> tags when thinking so i can remove them for abst
   @override
   Widget build(BuildContext context) {
     return predictions.isEmpty
-      ? SpinKitThreeInOut(color: Colors.blueGrey, size: 30,)
+      ? SpinKitThreeInOut(color: Colors.blueAccent, size: 30,)
       : SizedBox(
         height: 170,
         child: ListView.builder(

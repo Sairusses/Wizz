@@ -273,7 +273,7 @@ Always add <think> </think> tags when thinking so I can remove them for abstract
     return predictions.isEmpty
         ? SpinKitThreeInOut(color: Colors.blueGrey, size: 30,)
         : SizedBox(
-      height: 170,
+      height: MediaQuery.of(context).size.height,
       child: ListView.builder(
         shrinkWrap: true,
         itemCount: predictions.length,

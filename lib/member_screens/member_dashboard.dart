@@ -179,7 +179,7 @@ class _DueTodayTasksList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (tasks.isEmpty) {
-      return const Center(child: Text("No tasks completed."));
+      return const Center(child: Text("No tasks due today."));
     }
 
     return ListView.builder(
